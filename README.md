@@ -1,9 +1,9 @@
 # COM617
 
 ## Team Members
-Ben Baier - Director
-Jordan Forrest - Project Manager
-Jack Gray - Editor
+* Ben Baier - Director
+* Jordan Forrest - Project Manager
+* Jack Gray - Editor
 
 
 ## Sprints and their goals

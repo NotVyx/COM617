@@ -29,7 +29,10 @@
     1. Docker Compose
     2. AWS EC2
     3. AWS Databases / DynamoDB (NoSQL)
-    4. 
 
+
+
+## Optional Requirements:
+1. Solution could have a VPN between OpenNMS and customer networks.
 
 

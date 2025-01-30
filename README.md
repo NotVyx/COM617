@@ -49,10 +49,3 @@
     3. DNS
     4. TCP Port
     5. SSH (If applicable)
-
-
-
-## Optional Requirements:
-1. Solution could have a VPN between OpenNMS and customer networks.
-
-

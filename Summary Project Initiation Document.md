@@ -20,10 +20,14 @@ Currently OpenNMS is deployed within a business and there is no cloud solution a
 1. Create a deployable OpenNMS Solution within AWS utilising the following technologies
     1. AWS EC2 (OpenNMS Core)
     2. AWS RDS (Database PostgreSQL)
+    3. AWS ECS (Elastic Container Service)
+    5. AWS EKS (Elastic Kubernetes Service)
 2. Product must be accessible globally
     1. VPN may be required
-    2. OpenNMS Minions
+    2. OpenNMS Minions, can be ran on an Raspberry Pi
 3. Outline Costs to run OpenNMS as a service within AWS (Hourly, Daily, Weekly, Monthly)
+
+
 
 ## Scope & Exclusions
 N/A

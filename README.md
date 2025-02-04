@@ -24,35 +24,21 @@
 
 
 ## Requirements:
-1. Solution must be globally accessible with the use of a Minion
-    1. (optional) May require the use of a VPN
-        1. Wireguard
-        2. OpenVPN
-    2. Must use any of the following communication protocols
-        1. Kafka
-        2. ActiveMQ
-        3. GRPC
-    3. Must be deployable with minimal user configuration
-2. Solution must be deployable within the cloud in an optimised manner
-    1. Deployed within AWS utilise solutions such as
-        1. EC2
-        2. AWS Databases such as AWS RDS (SQL) or DynamoDB (NoSQL)
-        3. S3 Storage, for logs(?)
-    2. On-Premise must use any of the following solutions
-        1. Docker or Kubernetes for containerisation
-        2. NoSQL or MariaDB (SQL)
-3. Solution must have users and roles configured for each customer.
-4. OpenNMS must utilise alarms and notifications to alert the relevant customer of the outage.
-5. Must monitor systems must be able to monitor the following services:
-    1. SNMP
-    2. HTTP(s)
-    3. DNS
-    4. TCP Port
-    5. SSH (If applicable)
+1. Create a deployable OpenNMS Solution within AWS utilising the following technologies
+    1. AWS EC2 (OpenNMS Core)
+    2. AWS RDS (Database PostgreSQL)
+2. Product must be accessible globally
+    1. VPN may be required
+    2. OpenNMS Minions
+3. Outline Costs to run OpenNMS as a service within AWS (Hourly, Daily, Weekly, Monthly)
 
 
+## Table of Requirements:
+| A Cloud Formation | ???? | ActiveMQ | Kafka | GRPC |
+|-------------------|------|----------|-------|------|
+| ECS               |      |          |       |      |
+| EKS               |      |          |       |      |
 
-## Optional Requirements:
-1. Solution could have a VPN between OpenNMS and customer networks.
+
 
 

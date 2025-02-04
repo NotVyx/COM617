@@ -1,17 +1,17 @@
-### Project Initiation Document
+# Project Initiation Document
 
 ## Project Summary & Introduction
-# Purpose
+### Purpose
 The purpose is to create a easily deployable OpenNMS as a service Solution within AWS utilising resources such as EKS, ECS, RDS and EC2
 
-# Background
+### Background
 Currently OpenNMS is deployed within a business and there is no cloud solution available which companies can easily deploy within their infrastructure. This project is aimed at providing a simple solution.
 
 ## Project Aims & Objectives
-# Aims
+### Aims
 * Provide a OpenNMS as a service solution to customers
 
-# Objectives
+### Objectives
 * Utilise AWS resources to provide OpenNMS Horizon Core to customers
 * Utilising Minions, to provide a way for customers to monitor their in house infrastructure
 * Utilise Grafana to make a more customer friendly display of data
@@ -30,7 +30,7 @@ N/A
 
 ## Monitoring and Evaluation
 
-# Test Plan
+### Test Plan
 | A Cloud Formation | GRPC | ActiveMQ | Kafka |
 |-------------------|------|----------|-------|
 | ECS               |      |          |       |
@@ -39,7 +39,7 @@ N/A
 
 
 ## Project Organisation & Structure
-#Team Members
+### Team Members
 * Ben Baier - Director
 * Jordan Forrest - Project Manager
 * Jack Gray - Editor

@@ -24,20 +24,24 @@
 
 
 ## Requirements:
-1. Create a deployable OpenNMS Solution within AWS utilising the following technologies
-    1. AWS EC2 (OpenNMS Core)
-    2. AWS RDS (Database PostgreSQL)
-2. Product must be accessible globally
-    1. VPN may be required
-    2. OpenNMS Minions
-3. Outline Costs to run OpenNMS as a service within AWS (Hourly, Daily, Weekly, Monthly)
+### 1. Develop a method to automatically deployment of OpenNMS on AWS
+    1. Utilise AWS Resources such as EKS, ECS, RDS and EC2
+### 2. Multi-Tenant Support
+    1. Enable a deployment for multiple customers with isolated configuration
+    2. Provide a secure method of connectivity for each customers network to OpenNMS
+### 3. Secure Connectivity
+    1. A VPN solution may be neccessary for some customers due to network limitations.
 
 
-## Table of Requirements:
+## Test Plan
 | A Cloud Formation | ???? | ActiveMQ | Kafka | GRPC |
 |-------------------|------|----------|-------|------|
 | ECS               |      |          |       |      |
 | EKS               |      |          |       |      |
+| EC2               |      |          |       |      |
+
+
+| 
 
 
 

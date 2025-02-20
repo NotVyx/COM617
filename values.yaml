@@ -1,0 +1,1251 @@
+core:
+  configuration:
+    affinity: null
+    alecImage: {}
+    alwaysRollDeployment: true
+    cortexTssImage: {}
+    database:
+      password: 0p3nNM5
+      poolSize: 50
+      username: opennms
+    enableAcls: false
+    enableAlec: false
+    enableCortex: false
+    enableTssDualWrite: false
+    etcUpdatePolicy: never
+    http:
+      adminPassword: admin
+      restPassword: admin
+      restUsername: opennms
+    nodeSelector: null
+    ports:
+      karaf:
+        enabled: true
+        externalPort: 8101
+      syslog:
+        enabled: true
+        externalPort: 10514
+      trapd:
+        enabled: true
+        externalPort: 1162
+    rras:
+    - RRA:AVERAGE:0.5:1:2016
+    - RRA:AVERAGE:0.5:12:1488
+    - RRA:AVERAGE:0.5:288:366
+    - RRA:MAX:0.5:288:366
+    - RRA:MIN:0.5:288:366
+    storage:
+      etc: 1Gi
+      mibs: null
+      rrd: 1000Gi
+    tolerations: null
+  env: {}
+  image:
+    pullPolicy: IfNotPresent
+    repository: opennms/horizon
+    tag: ""
+  initContainers: []
+  inspector:
+    enabled: false
+  overlayConfigMaps: []
+  postConfigJob:
+    ttlSecondsAfterFinished: 300
+  resources:
+    limits:
+      cpu: "2"
+      memory: 8Gi
+    requests:
+      cpu: "2"
+      memory: 4Gi
+  terminationGracePeriodSeconds: 120
+createNamespace: false
+dependencies:
+  clusterRole: true
+  clusterRoleBinding: true
+  cortex:
+    bulkheadMaxWaitDuration: "9223372036854775807"
+    externalTagsCacheSize: 1000
+    maxConcurrentHttpConnections: 100
+    metricCacheSize: 1000
+    organizationId: ""
+    readTimeoutInMs: 1000
+    readUrl: http://cortex-query-frontend.shared.svc.cluster.local:8080/prometheus/api/v1
+    writeTimeoutInMs: 1000
+    writeUrl: http://cortex-distributor.shared.svc.cluster.local:8080/api/v1/push
+  elasticsearch:
+    configuration:
+      flows:
+        indexStrategy: daily
+        numShards: 1
+        replicationFactor: 0
+    hostname: ""
+    password: 31@st1c
+    port: 9200
+    username: elastic
+  kafka:
+    configuration:
+      saslMechanism: SCRAM-SHA-512
+      securityProtocol: SASL_SSL
+    hostname: ""
+    password: 0p3nNM5
+    port: 9093
+    username: opennms
+  loki:
+    caCert: ""
+    hostname: ""
+    password: ""
+    port: 3100
+    username: ""
+  postgresql:
+    caCert: ""
+    hostname: onms-db.shared.svc
+    password: P0stgr3s
+    port: 5432
+    sslfactory: org.postgresql.ssl.LibPQFactory
+    sslmode: require
+    username: postgres
+  route: true
+  securitycontext:
+    allowPrivilegeEscalation: true
+    allowedCapabilities:
+    - NET_BIND_SERVICE
+    - CAP_NET_RAW
+    securitycontextconstraints:
+      enabled: true
+      name: opennms-scc
+    serviceaccount:
+      enabled: true
+      name: opennms-sa
+  truststore:
+    content: ""
+    password: 0p3nNM5
+domain: example.com
+grafana:
+  configuration:
+    database:
+      image:
+        pullPolicy: IfNotPresent
+        repository: postgres
+        tag: "13"
+      password: Gr@f@n@
+      sslmode: require
+      username: grafana
+    ui:
+      adminPassword: admin
+  image:
+    pullPolicy: IfNotPresent
+    repository: opennms/helm
+    tag: 9.0.10
+  imageRenderer:
+    image:
+      pullPolicy: IfNotPresent
+      repository: grafana/grafana-image-renderer
+      tag: latest
+    replicaCount: 2
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+  replicaCount: 0
+  resources:
+    limits:
+      cpu: 200m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 1Gi
+imagePullSecrets: []
+ingress:
+  annotations: {}
+  certManager:
+    clusterIssuer: opennms-issuer
+  className: nginx
+multiTenant: false
+promtail:
+  image:
+    pullPolicy: IfNotPresent
+    repository: grafana/promtail
+    tag: latest
+  resources:
+    limits:
+      cpu: 50m
+      memory: 64Mi
+releaseNamespace: false
+sentinel:
+  configuration:
+    database:
+      poolSize: 25
+  image:
+    pullPolicy: IfNotPresent
+    repository: opennms/sentinel
+    tag: ""
+  replicaCount: 0
+  resources:
+    limits:
+      cpu: "2"
+      memory: 4Gi
+    requests:
+      cpu: "2"
+      memory: 2Gi
+  terminationGracePeriodSeconds: 60
+timezone: America/New_York
+
+HOOKS:
+MANIFEST:
+---
+# Source: horizon/templates/app-credentials.secret.yaml
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: app-credentials
+  namespace: default
+  labels:
+    helm.sh/chart: horizon-1.1.13
+    app.kubernetes.io/name: horizon
+    app.kubernetes.io/instance: monms
+    app.kubernetes.io/version: "33.0.1"
+    app.kubernetes.io/managed-by: Helm
+data:
+  POSTGRES_USER: cG9zdGdyZXM=
+  POSTGRES_PASSWORD: UDBzdGdyM3M=
+  OPENNMS_DBUSER: b3Blbm5tcw==
+  OPENNMS_DBPASS: MHAzbk5NNQ==
+  OPENNMS_HTTP_USER: b3Blbm5tcw==
+  OPENNMS_HTTP_PASS: YWRtaW4=
+  OPENNMS_ADMIN_PASS: YWRtaW4=
+  KAFKA_SASL_USERNAME: b3Blbm5tcw==
+  KAFKA_SASL_PASSWORD: MHAzbk5NNQ==
+---
+# Source: horizon/templates/app-jks.secret.yaml
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: app-jks
+  namespace: default
+  labels:
+    helm.sh/chart: horizon-1.1.13
+    app.kubernetes.io/name: horizon
+    app.kubernetes.io/instance: monms
+    app.kubernetes.io/version: "33.0.1"
+    app.kubernetes.io/managed-by: Helm
+data: # To be mounted at /etc/java/jks
+---
+# Source: horizon/templates/app-scripts.configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-scripts
+  namespace: default
+  labels:
+    helm.sh/chart: horizon-1.1.13
+    app.kubernetes.io/name: horizon
+    app.kubernetes.io/instance: monms
+    app.kubernetes.io/version: "33.0.1"
+    app.kubernetes.io/managed-by: Helm
+data:
+  grafana-init.sh: |
+    #!/bin/bash
+    #
+    # Intended to be used as part of an InitContainer expecting to run using the postgres image
+    #
+    # External environment variables used by this script:
+    # POSTGRES_HOST
+    # POSTGRES_PORT
+    # POSTGRES_USER
+    # POSTGRES_PASSWORD
+    # GF_DATABASE_NAME
+    # GF_DATABASE_USER
+    # GF_DATABASE_PASSWORD
+  
+    export PGHOST=${POSTGRES_HOST}
+    export PGPORT=${POSTGRES_PORT}
+    export PGUSER=${POSTGRES_USER}
+    export PGPASSWORD=${POSTGRES_PASSWORD}
+    export PGSSLMODE=${POSTGRES_SSL_MODE}
+    export PGSSLROOTCERT=/etc/java/jks/postgresql-ca.cert
+  
+    echo "Grafana Database Initialization Script..."
+  
+    # Requirements
+    command -v pg_isready >/dev/null 2>&1 || { echo >&2 "pg_isready is required but it's not installed. Aborting."; exit 1; }
+    command -v psql       >/dev/null 2>&1 || { echo >&2 "psql is required but it's not installed. Aborting."; exit 1; }
+    command -v createdb   >/dev/null 2>&1 || { echo >&2 "createdb is required but it's not installed. Aborting."; exit 1; }
+    command -v createuser >/dev/null 2>&1 || { echo >&2 "createuser is required but it's not installed. Aborting."; exit 1; }
+  
+    # Wait for dependencies
+    echo "Waiting for postgresql host ${PGHOST}"
+    until pg_isready; do
+      printf ''
+      sleep 5
+    done
+    echo "Done"
+  
+    # Create the database if it doesn't exist
+    if psql -lqt | cut -d \| -f 1 | grep -qw "${GF_DATABASE_NAME}"; then
+      TABLES=$(psql -qtAX -d "${GF_DATABASE_NAME}" -c "select count(*) from  pg_stat_user_tables;")
+      echo "Grafana database already exists on ${PGHOST}."
+      echo "There are ${TABLES} tables on it, skipping..."
+    else
+      echo "Creating grafana user and database on ${PGHOST}..."
+      createdb -E UTF-8 "${GF_DATABASE_NAME}"
+      createuser "${GF_DATABASE_USER}"
+      psql -c "alter role ${GF_DATABASE_USER} with password '${GF_DATABASE_PASSWORD}';"
+      psql -c "alter user ${GF_DATABASE_USER} set search_path to ${GF_DATABASE_NAME},public;"
+      psql -c "grant all on database ${GF_DATABASE_NAME} to ${GF_DATABASE_USER};"
+      psql -c "ALTER DATABASE ${GF_DATABASE_NAME} OWNER TO ${GF_DATABASE_USER};"
+      psql -c "GRANT USAGE, CREATE ON SCHEMA PUBLIC TO ${GF_DATABASE_USER};"
+    fi
+  onms-core-init.sh: "#!/bin/bash\n#\n# Intended to be used as part of an InitContainer
+    expecting the same Container Image as OpenNMS\n# Designed for Horizon 29 or Meridian
+    2021 and 2022. Newer or older versions are not supported.\n#\n# External environment
+    variables used by this script:\n# CONFIG_DIR_OVERLAY (initialized by the caller
+    script)\n# CORTEX_BULKHEAD_MAX_WAIT_DURATION\n# CORTEX_EXTERNAL_TAGS_CACHE_SIZE\n#
+    CORTEX_MAX_CONCURRENT_HTTP_CONNECTIONS\n# CORTEX_METRIC_CACHE_SIZE\n# CORTEX_ORGANIZATION_ID\n#
+    CORTEX_READ_TIMEOUT\n# CORTEX_READ_URL\n# CORTEX_WRITE_TIMEOUT\n# CORTEX_WRITE_URL\n#
+    ELASTICSEARCH_INDEX_STRATEGY_FLOWS\n# ELASTICSEARCH_PASSWORD\n# ELASTICSEARCH_SERVER\n#
+    ELASTICSEARCH_USER\n# ENABLE_ACLS\n# ENABLE_ALEC\n# ENABLE_CORTEX\n# ENABLE_GRAFANA\n#
+    ENABLE_TELEMETRYD\n# ENABLE_TSS_DUAL_WRITE\n# KAFKA_BOOTSTRAP_SERVER\n# KAFKA_SASL_MECHANISM\n#
+    KAFKA_SASL_PASSWORD\n# KAFKA_SASL_USERNAME\n# KAFKA_SECURITY_PROTOCOL\n# OPENNMS_ADMIN_PASS\n#
+    OPENNMS_DATABASE_CONNECTION_MAXPOOL\n# OPENNMS_DBNAME\n# OPENNMS_DBPASS\n# OPENNMS_DBUSER\n#
+    OPENNMS_INSTANCE_ID\n# OPENNMS_RRAS\n# POSTGRES_HOST\n# POSTGRES_PASSWORD\n# POSTGRES_PORT\n#
+    POSTGRES_SSL_FACTORY\n# POSTGRES_SSL_MODE\n# POSTGRES_USER\n\nset -euo pipefail\ntrap
+    's=$?; echo >&2 \"$0: Error on line \"$LINENO\": $BASH_COMMAND\"; exit $s' ERR\n\ntrap
+    'echo \"Received SIGHUP: exiting.\"; exit 2' HUP\ntrap 'echo \"Received SIGTERM:
+    exiting.\"; exit 2' TERM\n\numask 002\n\nfunction wait_for {\n  echo \"Waiting for
+    $1\"\n  IFS=':' read -a data <<< $1\n  until printf \"\" 2>>/dev/null >>/dev/tcp/${data[0]}/${data[1]};
+    do\n    sleep 5\n  done\n  echo \"Done\"\n}\n\nfunction update_rras {\n  if grep
+    -q \"[<]rrd\" $1; then\n    echo \"  Updating RRAS in $1\"\n    sed -i -r \"/[<]rra/d\"
+    $1\n    sed -i -r \"/[<]rrd/a $2\" $1\n  fi\n}\n\necho \"OpenNMS Core Configuration
+    Script...\"\n\n# Requirements\ncommand -v rsync >/dev/null 2>&1 || { echo >&2 \"rsync
+    is required but it's not installed. Aborting.\"; exit 1; }\n\n# Defaults\nOPENNMS_DATABASE_CONNECTION_MAXPOOL=${OPENNMS_DATABASE_CONNECTION_MAXPOOL-50}\nKAFKA_SASL_MECHANISM=${KAFKA_SASL_MECHANISM-PLAIN}\nKAFKA_SECURITY_PROTOCOL=${KAFKA_SECURITY_PROTOCOL-SASL_PLAINTEXT}\n\n#
+    Retrieve OpenNMS package name and version\nif command -v unzip   >/dev/null 2>&1;
+    then\nPKG=$(unzip -q -c \"/opt/opennms/lib/opennms_install.jar\" installer.properties
+    | grep \"install.package.name\"  | cut -d '=' -f 2)\nVERSION=$(tail -1 \"/opt/opennms/jetty-webapps/opennms/WEB-INF/version.properties\"
+    | cut -d '=' -f 2)\nelse\n# Assume opennms PKG\nPKG=opennms\nVERSION=$(tail -1 \"/opt/opennms/jetty-webapps/opennms/WEB-INF/version.properties\"
+    | cut -d '=' -f 2)\nfi\n\nif [[ \"${PKG}\" == \"unknown\" ]] || [[ \"${PKG}\" ==
+    \"\" ]]; then\n  if [[ ! -e jetty-webapps/opennms/WEB-INF/version.properties ]];
+    then\n    echo >&2 \"Couldn't determine version number from package manager (which
+    is normal for newer containers) and jetty-webapps/opennms/WEB-INF/version.properties
+    does not exist. Aborting.\"; exit 1;\n  fi\n  VERSION=$(grep '^version\\.display='
+    jetty-webapps/opennms/WEB-INF/version.properties | sed -e 's/^version.display=//'
+    -e 's/#.*//')\n  if [[ \"$VERSION\" == 20?? ]]; then\n    PKG=meridian-assumed\n
+    \ else\n    PKG=horizon-assumed\n  fi\nfi\n\nMAJOR=${VERSION%%.*}\necho \"Package:
+    ${PKG}\"\necho \"Version: ${VERSION}\"\necho \"Major: ${MAJOR}\"\n\nIFS=. read -r
+    MAJOR MINOR PATCH <<<\"$VERSION\"\necho \"Minor: ${MINOR}\"\nPATCH=${PATCH//-SNAPSHOT}\necho
+    \"Patch: ${PATCH}\"\n\n\n# Verify if Twin API is available\nUSE_TWIN=\"false\"\nif
+    [[ \"$PKG\" == *\"meridian\"* ]]; then\n  echo \"OpenNMS Meridian $MAJOR detected\"\n
+    \ if (( $MAJOR > 2021 )); then\n    USE_TWIN=true\n  fi\nelif [[ \"$PKG\" == *\"opennms\"*
+    ]] && [[ $MAJOR > 2021 ]];then\n  echo \"OpenNMS Core $MAJOR detected\"\n  USE_TWIN=true\nelse\n
+    \ echo \"OpenNMS Core $MAJOR detected\"\n  if (( $MAJOR > 28 )); then\n    USE_TWIN=true\n
+    \ fi\nfi\necho \"Twin API Available? $USE_TWIN\"\n\n# Wait for dependencies\nwait_for
+    ${POSTGRES_HOST}:${POSTGRES_PORT}\nif [[ -v KAFKA_BOOTSTRAP_SERVER ]]; then\n  wait_for
+    ${KAFKA_BOOTSTRAP_SERVER}\nfi\n\nCONFIG_DIR=\"/opennms-etc\"          # Mounted
+    externally\nBACKUP_ETC=\"/opt/opennms/etc\"      # Requires OpenNMS Image\nOVERLAY_DIR=\"/opt/opennms-overlay\"
+    # Mounted Externally\nDEPLOY_DIR=\"/opennms-deploy\"       # Mounted Externally\n\nCONFIG_DIR_OVERLAY=${OVERLAY_DIR}/etc\n\nOVERLAY_CONFIG_MAPS=\"/opennms-overlay-configmaps\"
+    \         # Mounted externally\n\nKARAF_FILES=( \\\n\"config.properties\" \\\n\"startup.properties\"
+    \\\n\"custom.properties\" \\\n\"jre.properties\" \\\n\"profile.cfg\" \\\n\"jmx.acl.*\"
+    \\\n\"org.apache.felix.*\" \\\n\"org.apache.karaf.*\" \\\n\"org.ops4j.pax.url.mvn.cfg\"
+    \\\n)\n\n# Show permissions (debug purposes)\necho -n \"Configuration directory
+    permissions: \"\nls -ld ${CONFIG_DIR}\n\n### Initialize etc directory\n\n# First,
+    we need to handle updates from older Helm charts before we do anything else.\n#
+    Older charts (0.3.0 and before) didn't use helm-chart-configured, but only used\n#
+    OpenNMS' configured file. If configured exists, but no helm-chart-configured exists,\n#
+    assume we are updating from an older Helm chart and create helm-chart-configured.\nif
+    [ -f ${CONFIG_DIR}/configured ] && [ ! -f ${CONFIG_DIR}/helm-chart-configured ];
+    then\n  echo \"Upgrading from older Helm chart that has already been configured:
+    creating ${CONFIG_DIR}/helm-chart-configured and ${CONFIG_DIR}/helm-chart-opennms-version.\"\n
+    \ touch ${CONFIG_DIR}/helm-chart-configured\n  echo \"version not stored previously\"
+    > ${CONFIG_DIR}/helm-chart-opennms-version\nfi\n\n# Include all the configuration
+    files that must be added once but could change after the first run\nif [ ! -f ${CONFIG_DIR}/helm-chart-configured
+    ]; then\n  echo \"Initializing configuration directory for the first time ...\"\n
+    \ rsync -arO --no-perms --no-owner --no-group --out-format=\"%n %C\" ${BACKUP_ETC}/
+    ${CONFIG_DIR}/ | sed 's/^/  /'\n\n  echo \"Initialize default foreign source definition
+    in ${CONFIG_DIR}/default-foreign-source.xml\"\n  cat <<EOF > ${CONFIG_DIR}/default-foreign-source.xml\n<foreign-source
+    xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"default\" date-stamp=\"2018-01-01T00:00:00.000-05:00\">\n
+    \ <scan-interval>1d</scan-interval>\n  <detectors>\n    <detector name=\"ICMP\"
+    class=\"org.opennms.netmgt.provision.detector.icmp.IcmpDetector\"/>\n    <detector
+    name=\"SNMP\" class=\"org.opennms.netmgt.provision.detector.snmp.SnmpDetector\"/>\n
+    \   <detector name=\"OpenNMS-JVM\" class=\"org.opennms.netmgt.provision.detector.jmx.Jsr160Detector\">\n
+    \     <parameter key=\"port\" value=\"18980\"/>\n      <parameter key=\"factory\"
+    value=\"PASSWORD-CLEAR\"/>\n      <parameter key=\"username\" value=\"admin\"/>\n
+    \     <parameter key=\"password\" value=\"admin\"/>\n      <parameter key=\"protocol\"
+    value=\"rmi\"/>\n      <parameter key=\"urlPath\" value=\"/jmxrmi\"/>\n      <parameter
+    key=\"timeout\" value=\"3000\"/>\n      <parameter key=\"retries\" value=\"2\"/>\n
+    \     <parameter key=\"type\" value=\"default\"/>\n      <parameter key=\"ipMatch\"
+    value=\"127.0.0.1\"/>\n    </detector>\n  </detectors>\n  <policies>\n    <policy
+    name=\"Do Not Persist Discovered IPs\" class=\"org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy\">\n
+    \     <parameter key=\"action\" value=\"DO_NOT_PERSIST\"/>\n      <parameter key=\"matchBehavior\"
+    value=\"NO_PARAMETERS\"/>\n    </policy>\n    <policy name=\"Enable Data Collection\"
+    class=\"org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy\">\n
+    \     <parameter key=\"action\" value=\"ENABLE_COLLECTION\"/>\n      <parameter
+    key=\"matchBehavior\" value=\"ANY_PARAMETER\"/>\n      <parameter key=\"ifOperStatus\"
+    value=\"1\"/>\n    </policy>\n  </policies>\n</foreign-source>\nEOF\n  echo \"Touching
+    ${CONFIG_DIR}/helm-chart-configured to indicate that the Helm chart has been configured
+    for the first time\"\n  touch ${CONFIG_DIR}/helm-chart-configured\nelse\n  echo
+    -n \"Previous configuration found. Update policy opennms.configuration.etcUpdatePolicy
+    == ${OPENNMS_ETC_UPDATE_POLICY}. \"\n  if [ \"${OPENNMS_ETC_UPDATE_POLICY}\" ==
+    \"never\" ]; then\n     echo \"Not updating etc files\"\n  elif [ \"${OPENNMS_ETC_UPDATE_POLICY}\"
+    == \"newer\" ]; then\n     echo \"Synchronizing only newer files...\"\n     rsync
+    -aruO --no-perms --no-owner --no-group --out-format=\"%n %C\" ${BACKUP_ETC}/ ${CONFIG_DIR}/
+    | sed 's/^/  /'\n  elif [ \"${OPENNMS_ETC_UPDATE_POLICY}\" == \"new\" ]; then\n
+    \    echo \"Synchronizing only new files...\"\n     rsync -arO --ignore-existing
+    --no-perms --no-owner --no-group --out-format=\"%n %C\" ${BACKUP_ETC}/ ${CONFIG_DIR}/
+    | sed 's/^/  /'\n  else\n     echo \"Unsupported update policy '${OPENNMS_ETC_UPDATE_POLICY}'.
+    Exiting.\" >&2\n     exit 1\n  fi\nfi\n\n# See if we are on a fresh install or a
+    different version of OpenNMS and remove\n# the \"configured\" file so the installer
+    runs.\nif [ ! -f ${CONFIG_DIR}/helm-chart-opennms-version ]; then\n  previous_opennms=\"new
+    Helm chart install\"\nelse\n  previous_opennms=\"$(<${CONFIG_DIR}/helm-chart-opennms-version)\"\nfi\ncurrent_opennms=\"${PKG}-${VERSION}\"\nif
+    [ \"${previous_opennms}\" != \"${current_opennms}\" ]; then\n  echo \"OpenNMS version
+    change detected from '${previous_opennms}' to '${current_opennms}': triggering installer
+    to run by removing ${CONFIG_DIR}/configured file. Also updating version in ${CONFIG_DIR}/helm-chart-opennms-version.\"\n
+    \ rm -f ${CONFIG_DIR}/configured # it might not already exist\n  echo \"${current_opennms}\"
+    > ${CONFIG_DIR}/helm-chart-opennms-version\nelse\n  echo \"No OpenNMS version change
+    detected: still on '${current_opennms}'\"\nfi\n\n# Guard against application upgrades\nMANDATORY=/tmp/opennms-mandatory\nmkdir
+    -p ${MANDATORY}\necho \"Backing up mandatory files...\"\nfor file in \"${KARAF_FILES[@]}\";
+    do\n  echo \"  Backing up ${file} to ${MANDATORY}...\"\n  cp --force ${BACKUP_ETC}/${file}
+    ${MANDATORY}/\ndone\n# WARNING: if the volume behind CONFIG_DIR doesn't have the
+    right permissions, the following fails\necho \"Overriding mandatory files from ${MANDATORY}
+    to ${CONFIG_DIR}...\"\nrsync -aO --no-perms --no-owner --no-group --out-format=\"%n
+    %C\" ${MANDATORY}/ ${CONFIG_DIR}/ | sed 's/^/  /'\n\n# Initialize overlay\nmkdir
+    -p ${CONFIG_DIR_OVERLAY}/opennms.properties.d ${CONFIG_DIR_OVERLAY}/featuresBoot.d\n\n#
+    Apply common OpenNMS configuration settings\n# Configure the instance ID\n# Required
+    when having multiple OpenNMS backends sharing a Kafka cluster or an Elasticsearch
+    cluster.\nif [ -n \"${OPENNMS_INSTANCE_ID}\" ]; then\n  echo \"Creating ${CONFIG_DIR_OVERLAY}/opennms.properties.d/instanceid.properties
+    with our instance ID '${OPENNMS_INSTANCE_ID}'\"\n  cat <<EOF > ${CONFIG_DIR_OVERLAY}/opennms.properties.d/instanceid.properties\n#
+    Used for Kafka Topics and Elasticsearch Index Prefixes\norg.opennms.instance.id=${OPENNMS_INSTANCE_ID}\nEOF\nelse\n
+    \ if [[ -e \"${CONFIG_DIR}/opennms.properties.d/instanceid.properties\" ]]; then\n
+    \   echo \"Found ${CONFIG_DIR}/opennms.properties.d/instanceid.properties, we are
+    going to remove it.\"\n    rm \"${CONFIG_DIR}/opennms.properties.d/instanceid.properties\"\n
+    \ fi\nfi\n\n# Disable data choices (optional)\necho \"Creating ${CONFIG_DIR_OVERLAY}/org.opennms.features.datachoices.cfg
+    to disable data choices\"\ncat <<EOF > ${CONFIG_DIR_OVERLAY}/org.opennms.features.datachoices.cfg\nenabled=false\nacknowledged-by=admin\nacknowledged-at=Sun
+    Mar 01 00\\:00\\:00 EDT 2020\nEOF\n\n# Configure Database access\nUSE_UPDATED_DATASOURCE=false\nif
+    [ \"${MAJOR}\" -eq 32 ];then\n  if [ \"${MINOR}\" -gt 0 ];then\n    USE_UPDATED_DATASOURCE=true\n
+    \ elif [ \"${MINOR}\" -eq 0 ] && [ \"${PATCH}\" -ge 4 ];then\n    USE_UPDATED_DATASOURCE=true\n
+    \ else\n    USE_UPDATED_DATASOURCE=false\n  fi\nelif [ \"${MAJOR}\" -ge 33 ] &&
+    [ \"${MAJOR}\" -lt 2000 ]; then\n  USE_UPDATED_DATASOURCE=true\nelse\n  USE_UPDATED_DATASOURCE=false\nfi\necho
+    \"Creating datasource configuration in ${CONFIG_DIR_OVERLAY}/opennms-datasources.xml
+    (USE_UPDATED_DATASOURCE: $USE_UPDATED_DATASOURCE)\"\ncat <<EOF > ${CONFIG_DIR_OVERLAY}/opennms-datasources.xml\n<?xml
+    version=\"1.0\" encoding=\"UTF-8\"?>\n<datasource-configuration xmlns:this=\"http://xmlns.opennms.org/xsd/config/opennms-datasources\"
+    \n  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n  xsi:schemaLocation=\"http://xmlns.opennms.org/xsd/config/opennms-datasources
+    \n  http://www.opennms.org/xsd/config/opennms-datasources.xsd \">\n\n  <connection-pool
+    factory=\"org.opennms.core.db.HikariCPConnectionFactory\"\n    idleTimeout=\"600\"\n
+    \   loginTimeout=\"3\"\n    minPool=\"50\"\n    maxPool=\"50\"\n    maxSize=\"${OPENNMS_DATABASE_CONNECTION_MAXPOOL}\"
+    />\n\n  <jdbc-data-source name=\"opennms\" \n                    database-name=\"${OPENNMS_DBNAME}\"
+    \n                    class-name=\"org.postgresql.Driver\" \n                    url=\"jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${OPENNMS_DBNAME}?sslmode=${POSTGRES_SSL_MODE}&amp;sslfactory=${POSTGRES_SSL_FACTORY}\"\n
+    \                   user-name=\"${OPENNMS_DBUSER}\"\n                    password=\"${OPENNMS_DBPASS}\"
+    />\n\nEOF\nif $USE_UPDATED_DATASOURCE; then\ncat <<EOF >> ${CONFIG_DIR_OVERLAY}/opennms-datasources.xml\n
+    \ <jdbc-data-source name=\"opennms-admin\" \n                    database-name=\"template1\"
+    \n                    class-name=\"org.postgresql.Driver\" \n                    url=\"jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/template1?sslmode=${POSTGRES_SSL_MODE}&amp;sslfactory=${POSTGRES_SSL_FACTORY}\"\n
+    \                   user-name=\"${POSTGRES_USER}\"\n                    password=\"${POSTGRES_PASSWORD}\">\n
+    \   <connection-pool idleTimeout=\"600\"\n                     minPool=\"0\"\n                     maxPool=\"10\"\n
+    \                    maxSize=\"${OPENNMS_DATABASE_CONNECTION_MAXPOOL}\" />\n  </jdbc-data-source>\n
+    \ \n  <jdbc-data-source name=\"opennms-monitor\" \n                    database-name=\"postgres\"
+    \n                    class-name=\"org.postgresql.Driver\" \n                    url=\"jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/postgres?sslmode=${POSTGRES_SSL_MODE}&amp;sslfactory=${POSTGRES_SSL_FACTORY}\"\n
+    \                   user-name=\"${POSTGRES_USER}\"\n                    password=\"${POSTGRES_PASSWORD}\">\n
+    \   <connection-pool idleTimeout=\"600\"\n                     minPool=\"0\"\n                     maxPool=\"10\"\n
+    \                    maxSize=\"${OPENNMS_DATABASE_CONNECTION_MAXPOOL}\" />\n  </jdbc-data-source>\n</datasource-configuration>\nEOF\nelse\ncat
+    <<EOF >> ${CONFIG_DIR_OVERLAY}/opennms-datasources.xml\n  <jdbc-data-source name=\"opennms-admin\"\n
+    \                   database-name=\"template1\"\n                    class-name=\"org.postgresql.Driver\"\n
+    \                   url=\"jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/template1?sslmode=${POSTGRES_SSL_MODE}&amp;sslfactory=${POSTGRES_SSL_FACTORY}\"\n
+    \                   user-name=\"${POSTGRES_USER}\"\n                    password=\"${POSTGRES_PASSWORD}\"/>\n</datasource-configuration>\nEOF\nfi\n\n#
+    Enable storeByGroup to improve performance\n# RRD Strategy is enabled by default\necho
+    \"Creating ${CONFIG_DIR_OVERLAY}/opennms.properties.d/rrd.properties to enable storeByGroup\"\ncat
+    <<EOF > ${CONFIG_DIR_OVERLAY}/opennms.properties.d/rrd.properties\norg.opennms.rrd.storeByGroup=true\nEOF\n\n#
+    Configure Timeseries for Cortex if enabled\nif [[ ${ENABLE_CORTEX} == \"true\" ]];
+    then\n  echo \"Creating ${CONFIG_DIR_OVERLAY}/opennms.properties.d/timeseries.properties\"\n
+    \ if [[ ${ENABLE_TSS_DUAL_WRITE} == \"true\" ]]; then\n    # Do *not* set org.opennms.timeseries.strategy=integration
+    but do make sure the file exists and is empty for later\n    echo -n > ${CONFIG_DIR_OVERLAY}/opennms.properties.d/timeseries.properties\n
+    \ else\n    cat <<EOF > ${CONFIG_DIR_OVERLAY}/opennms.properties.d/timeseries.properties\norg.opennms.timeseries.strategy=integration\nEOF\n
+    \ fi\n\n  cat <<EOF >> ${CONFIG_DIR_OVERLAY}/opennms.properties.d/timeseries.properties\norg.opennms.timeseries.tin.metatags.tag.node=\\${node:label}\norg.opennms.timeseries.tin.metatags.tag.location=\\${node:location}\norg.opennms.timeseries.tin.metatags.tag.geohash=\\${node:geohash}\norg.opennms.timeseries.tin.metatags.tag.ifDescr=\\${interface:if-description}\norg.opennms.timeseries.tin.metatags.tag.label=\\${resource:label}\nEOF\n\n
+    \ echo \"Creating ${CONFIG_DIR_OVERLAY}/org.opennms.plugins.tss.cortex.cfg\"\n  cat
+    <<EOF > ${CONFIG_DIR_OVERLAY}/org.opennms.plugins.tss.cortex.cfg\nwriteUrl=${CORTEX_WRITE_URL}\nreadUrl=${CORTEX_READ_URL}\nmaxConcurrentHttpConnections=${CORTEX_MAX_CONCURRENT_HTTP_CONNECTIONS}\nwriteTimeoutInMs=${CORTEX_WRITE_TIMEOUT}\nreadTimeoutInMs=${CORTEX_READ_TIMEOUT}\nmetricCacheSize=${CORTEX_METRIC_CACHE_SIZE}\nexternalTagsCacheSize=${CORTEX_EXTERNAL_TAGS_CACHE_SIZE}\nbulkheadMaxWaitDuration=${CORTEX_BULKHEAD_MAX_WAIT_DURATION}\nEOF\n
+    \ if [[ -v CORTEX_ORGANIZATION_ID ]] && [ -n \"${CORTEX_ORGANIZATION_ID}\" ]; then\n
+    \   echo \"organizationId=${CORTEX_ORGANIZATION_ID}\" >> ${CONFIG_DIR_OVERLAY}/org.opennms.plugins.tss.cortex.cfg\n
+    \ elif [ -n \"${OPENNMS_INSTANCE_ID}\" ]; then\n    echo \"organizationId=${OPENNMS_INSTANCE_ID}\"
+    >> ${CONFIG_DIR_OVERLAY}/org.opennms.plugins.tss.cortex.cfg\n  fi\n\n  mkdir -p
+    ${CONFIG_DIR_OVERLAY}/featuresBoot.d\n\n  echo \"Creating ${CONFIG_DIR_OVERLAY}/featuresBoot.d/cortex.boot\"\n
+    \ cat <<EOF > ${CONFIG_DIR_OVERLAY}/featuresBoot.d/cortex.boot\nopennms-plugins-cortex-tss
+    wait-for-kar=opennms-cortex-tss-plugin\nEOF\n\n  if [[ ${ENABLE_TSS_DUAL_WRITE}
+    == \"true\" ]]; then\n    echo \"Creating ${CONFIG_DIR_OVERLAY}/featuresBoot.d/timeseries.boot\"\n
+    \   cat <<EOF > ${CONFIG_DIR_OVERLAY}/featuresBoot.d/timeseries.boot\nopennms-timeseries-api\nEOF\n
+    \ fi\nelse\n  if [[ -e \"${CONFIG_DIR}/featuresBoot.d/cortex.boot\" ]];then\n   echo
+    \"Found ${CONFIG_DIR}/featuresBoot.d/cortex.boot, we are going to remove it.\"\n
+    \  rm \"${CONFIG_DIR}/featuresBoot.d/cortex.boot\"\n  fi\n\n  if [[ -e \"${CONFIG_DIR}/featuresBoot.d/timeseries.boot\"
+    ]];then\n   echo \"Found ${CONFIG_DIR}/featuresBoot.d/timeseries.boot, we are going
+    to remove it.\"\n   rm \"${CONFIG_DIR}/featuresBoot.d/timeseries.boot\"\n  fi\nfi\n\n
+    \ mkdir -p ${CONFIG_DIR_OVERLAY}/opennms.properties.d\n\n# Enable ACLs\necho \"Creating
+    ${CONFIG_DIR_OVERLAY}/opennms.properties.d/acl.properties\"\ncat <<EOF > ${CONFIG_DIR_OVERLAY}/opennms.properties.d/acl.properties\norg.opennms.web.aclsEnabled=${ENABLE_ACLS}\nEOF\n\n#
+    Required changes in order to use HTTPS through Ingress\necho \"Creating ${CONFIG_DIR_OVERLAY}/opennms.properties.d/webui.properties\"\ncat
+    <<EOF > ${CONFIG_DIR_OVERLAY}/opennms.properties.d/webui.properties\nopennms.web.base-url=https://%x%c/\norg.opennms.security.disableLoginSuccessEvent=true\norg.opennms.web.defaultGraphPeriod=last_2_hour\nEOF\n\n#
+    Configure Elasticsearch to allow Helm/Grafana to access Flow data\nif [[ -v ELASTICSEARCH_SERVER
+    ]]; then\n  echo \"Configuring Elasticsearch for Flows...\"\n  echo \"Creating ${CONFIG_DIR_OVERLAY}/org.opennms.features.flows.persistence.elastic.cfg\"\n
+    \ cat <<EOF > ${CONFIG_DIR_OVERLAY}/org.opennms.features.flows.persistence.elastic.cfg\nelasticUrl=https://${ELASTICSEARCH_SERVER}\nglobalElasticUser=${ELASTICSEARCH_USER}\nglobalElasticPassword=${ELASTICSEARCH_PASSWORD}\nelasticIndexStrategy=${ELASTICSEARCH_INDEX_STRATEGY_FLOWS}\nEOF\n
+    \ if [ -n \"${OPENNMS_INSTANCE_ID}\" ]; then\n    PREFIX=$(echo ${OPENNMS_INSTANCE_ID}
+    | tr '[:upper:]' '[:lower:]')-\n    cat <<EOF >> ${CONFIG_DIR_OVERLAY}/org.opennms.features.flows.persistence.elastic.cfg\nindexPrefix=${PREFIX}\nEOF\n
+    \ fi\nfi\n\n\n# Collectd Optimizations\necho \"Creating ${CONFIG_DIR_OVERLAY}/opennms.properties.d/collectd.properties\"\ncat
+    <<EOF > ${CONFIG_DIR_OVERLAY}/opennms.properties.d/collectd.properties\n# To get
+    data as close as possible to PDP\norg.opennms.netmgt.collectd.strictInterval=true\nEOF\n\nif
+    [[ $(find ${DEPLOY_DIR} -type f  | wc -l) -gt 0 ]]; then\n cp ${DEPLOY_DIR}/*.kar
+    /usr/share/opennms/deploy\nfi\n\n# Enable ALEC standalone\nif [[ ${ENABLE_ALEC}
+    == \"true\" ]]; then\n  echo \"Creating ${CONFIG_DIR_OVERLAY}/featuresBoot.d/alec.boot\"\n
+    \ cat <<EOF > ${CONFIG_DIR_OVERLAY}/featuresBoot.d/alec.boot\nalec-opennms-standalone
+    wait-for-kar=opennms-alec-plugin\nEOF\nelse\n  if [[ -e \"${CONFIG_DIR}/featuresBoot.d/alec.boot\"
+    ]];then\n   echo \"Found ${CONFIG_DIR}/featuresBoot.d/alec.boot, we are going to
+    remove it.\"\n   rm \"${CONFIG_DIR}/featuresBoot.d/alec.boot\"\n  fi\nfi\n\n# Configure
+    Sink and RPC to use Kafka, and the Kafka Producer.\nif [[ -v KAFKA_BOOTSTRAP_SERVER
+    ]]; then\n  echo \"Configuring Kafka for IPC...\"\n\n  echo \"Creating ${CONFIG_DIR_OVERLAY}/opennms.properties.d/amq.properties\"\n
+    \ cat <<EOF > ${CONFIG_DIR_OVERLAY}/opennms.properties.d/amq.properties\norg.opennms.activemq.broker.disable=true\nEOF\n\n
+    \ echo \"Creating ${CONFIG_DIR_OVERLAY}/opennms.properties.d/kafka.properties\"\n
+    \ cat <<EOF > ${CONFIG_DIR_OVERLAY}/opennms.properties.d/kafka.properties\norg.opennms.core.ipc.strategy=kafka\nEOF\n\n
+    \ if [[ \"$USE_TWIN\" == \"true\" ]]; then\n    cat <<EOF >> ${CONFIG_DIR_OVERLAY}/opennms.properties.d/kafka.properties\n\n#
+    TWIN\norg.opennms.core.ipc.twin.kafka.bootstrap.servers=${KAFKA_BOOTSTRAP_SERVER}\nEOF\n
+    \   if [ -n \"${OPENNMS_INSTANCE_ID}\" ]; then\n      cat <<EOF >> ${CONFIG_DIR_OVERLAY}/opennms.properties.d/kafka.properties\norg.opennms.core.ipc.twin.kafka.group.id=${OPENNMS_INSTANCE_ID}-Core-Twin\nEOF\n
+    \   fi\n  fi\n\n  cat <<EOF >> ${CONFIG_DIR_OVERLAY}/opennms.properties.d/kafka.properties\n\n#
+    SINK\norg.opennms.core.ipc.sink.initialSleepTime=60000\norg.opennms.core.ipc.sink.kafka.bootstrap.servers=${KAFKA_BOOTSTRAP_SERVER}\n\n#
+    SINK Consumer (verify Kafka broker configuration)\norg.opennms.core.ipc.sink.kafka.session.timeout.ms=30000\norg.opennms.core.ipc.sink.kafka.max.poll.records=50\n\n#
+    RPC\norg.opennms.core.ipc.rpc.kafka.bootstrap.servers=${KAFKA_BOOTSTRAP_SERVER}\norg.opennms.core.ipc.rpc.kafka.ttl=30000\norg.opennms.core.ipc.rpc.kafka.single-topic=true\n\n#
+    RPC Consumer (verify Kafka broker configuration)\norg.opennms.core.ipc.rpc.kafka.request.timeout.ms=30000\norg.opennms.core.ipc.rpc.kafka.session.timeout.ms=30000\norg.opennms.core.ipc.rpc.kafka.max.poll.records=50\norg.opennms.core.ipc.rpc.kafka.auto.offset.reset=latest\n\n#
+    RPC Producer (verify Kafka broker configuration)\norg.opennms.core.ipc.rpc.kafka.acks=0\norg.opennms.core.ipc.rpc.kafka.linger.ms=5\nEOF\n\n
+    \ if [ -n \"${OPENNMS_INSTANCE_ID}\" ]; then\n    cat <<EOF >> ${CONFIG_DIR_OVERLAY}/opennms.properties.d/kafka.properties\n\n#
+    org.opennms.instance.id-prefixed groups for multi-tenant operation\norg.opennms.core.ipc.sink.kafka.group.id=${OPENNMS_INSTANCE_ID}-Core-Sink\norg.opennms.core.ipc.rpc.kafka.group.id=${OPENNMS_INSTANCE_ID}-Core-RPC\nEOF\n
+    \ fi\n\n  MODULES=\"rpc sink\"\n  if [[ \"$USE_TWIN\" == \"true\" ]]; then\n    MODULES=\"twin
+    $MODULES\"\n  fi\n  for module in $MODULES; do\n    cat <<EOF >> ${CONFIG_DIR_OVERLAY}/opennms.properties.d/kafka.properties\n\n#
+    ${module^^} Security\norg.opennms.core.ipc.$module.kafka.security.protocol=${KAFKA_SECURITY_PROTOCOL}\norg.opennms.core.ipc.$module.kafka.sasl.mechanism=${KAFKA_SASL_MECHANISM}\nEOF\n
+    \   if [[ -v KAFKA_SASL_USERNAME ]] &&  [[ -v KAFKA_SASL_PASSWORD ]]; then\n      if
+    [[ -v KAFKA_SASL_MECHANISM ]] && [[ \"${KAFKA_SASL_MECHANISM}\" == *\"SCRAM\"* ]];
+    then\n        JAAS_CLASS=\"org.apache.kafka.common.security.scram.ScramLoginModule\"\n
+    \     else\n        JAAS_CLASS=\"org.apache.kafka.common.security.plain.PlainLoginModule\"\n
+    \     fi\n      cat <<EOF >> ${CONFIG_DIR_OVERLAY}/opennms.properties.d/kafka.properties\norg.opennms.core.ipc.$module.kafka.sasl.jaas.config=${JAAS_CLASS}
+    required username=\"${KAFKA_SASL_USERNAME}\" password=\"${KAFKA_SASL_PASSWORD}\";\nEOF\n
+    \   fi\n  done\nfi\n\n# Configure RRAs\nif [[ -v OPENNMS_RRAS ]]; then\n  IFS=';'
+    read -a RRAS <<< ${OPENNMS_RRAS}\n  RRACFG=\"\"\n  for RRA in ${RRAS[@]}; do\n    RRACFG+=\"<rra>${RRA}</rra>\"\n
+    \ done\n  echo \"Configuring RRAs...\"\n  echo \"  RRA config: ${RRACFG}\"\n  for
+    XML in $(find ${CONFIG_DIR} -name '*datacollection*.xml' -or -name '*datacollection*.d');
+    do\n    if [ -d $XML ]; then\n      for XML in $(find ${XML} -name '*.xml'); do\n
+    \       update_rras ${XML} ${RRACFG}\n      done\n    else\n      update_rras ${XML}
+    ${RRACFG}\n    fi\n  done\nfi\n\n# Enable Syslogd\necho \"Enabling syslogd in ${CONFIG_DIR}/service-configuration.xml\"\nsed
+    -r -i '/enabled=\"false\"/{$!{N;s/ enabled=\"false\"[>]\\n(.*OpenNMS:Name=Syslogd.*)/>\\n\\1/}}'
+    ${CONFIG_DIR}/service-configuration.xml\n\n# Disable Telemetryd\nif [[ ${ENABLE_TELEMETRYD}
+    == \"false\" ]]; then\n  echo \"Enabling telemetryd in ${CONFIG_DIR}/service-configuration.xml
+    and ${CONFIG_DIR}/org.apache.karaf.features.cfg\"\n  sed -i -r '/opennms-flows/d'
+    ${CONFIG_DIR}/org.apache.karaf.features.cfg\n  sed -i 'N;s/service.*\\n\\(.*Telemetryd\\)/service
+    enabled=\"false\">\\n\\1/;P;D' ${CONFIG_DIR}/service-configuration.xml\nfi\n\n#
+    Cleanup temporary requisition files\necho \"Removing temporary requisition files
+    in ${CONFIG_DIR}/imports/pending/*.xml.* and ${CONFIG_DIR}/foreign-sources/pending/*.xml.*\"\nrm
+    -f ${CONFIG_DIR}/imports/pending/*.xml.*\nrm -f ${CONFIG_DIR}/foreign-sources/pending/*.xml.*\n\nif
+    [[ ${ENABLE_GRAFANA} == \"true\" ]]; then\n  # Configure Grafana\n  if [[ -e /scripts/onms-grafana-init.sh
+    ]]; then\n    source /scripts/onms-grafana-init.sh\n  else\n    echo \"Warning:
+    cannot find onms-grafana-init.sh\"\n  fi\nelse\n  echo \"Grafana is not enabled,
+    not running onms-grafana-init.sh\"\n  if [[ -e \"${CONFIG_DIR}/opennms.properties.d/grafana.properties\"
+    ]];then\n   echo \"Found ${CONFIG_DIR}/opennms.properties.d/grafana.properties,
+    we are going to remove it.\"\n   rm \"${CONFIG_DIR}/opennms.properties.d/grafana.properties\"\n
+    \ fi\nfi\n\necho \"Updating admin password in ${CONFIG_DIR}/users.xml\"\nif [[ -e
+    \"/opt/opennms/bin/password\" ]];then \n   cp ${CONFIG_DIR}/users.xml /opt/opennms/etc/users.xml
+    \n   echo \"RUNAS=$(whoami)\" > /opt/opennms/etc/opennms.conf\n   /opt/opennms/bin/runjava
+    -s -q \n   /opt/opennms/bin/password \"admin\" \"${OPENNMS_ADMIN_PASS}\"\n   rm
+    /opt/opennms/etc/opennms.conf /opt/opennms/etc/java.conf\n   cp /opt/opennms/etc/users.xml
+    ${CONFIG_DIR}/users.xml\nelif command -v perl   >/dev/null 2>&1; then\n perl /scripts/onms-set-admin-password.pl
+    ${CONFIG_DIR}/users.xml admin \"${OPENNMS_ADMIN_PASS}\"\nelse\n echo \"We are unable
+    to update Admin password. Exiting.\"\n exit 1\nfi\n\nif [ -d ${OVERLAY_CONFIG_MAPS}
+    ]; then\n  echo \"Processing overlay config maps ...\"\n  # We need to make sure
+    the directories are numerically sorted to match the configured configmap order.\n
+    \ for dir in $(ls -1d ${OVERLAY_CONFIG_MAPS}/* | sort -t/ -k3 -n); do\n    if [[
+    $(basename $dir) =~ .*-unzip ]]; then\n      for zip in $(ls -1 ${dir}/*.zip | sort);
+    do\n        echo \"  Extracting files from $zip to ${OVERLAY_DIR}/ ...\"\n        unzip
+    -o -d ${OVERLAY_DIR} ${zip} | sed 's/^/    /'\n      done\n    else\n      # When
+    we first copy off of the configmap volume, we copy symlinks as files and ignore
+    Kubernetes configmap volume \"..\" files.\n      # See: https://github.com/spring-projects/spring-boot/issues/23232\n
+    \     echo \"  Copying files from $dir to ${OVERLAY_DIR}/ ...\"\n      rsync -arO
+    -L --exclude='..*' --no-perms --no-owner --no-group --out-format=\"%n %C\" $dir/
+    ${OVERLAY_DIR}/ | sed 's/^/    /'\n    fi\n  done\nfi\n"
+  onms-grafana-init.sh: |
+    #!/bin/bash
+    #
+    # Intended to be used from the OpenNMS initialization script
+    # Designed for Horizon 29 or Meridian 2021 and 2022. Newer or older versions are not supported.
+    #
+    # External environment variables used by this script:
+    # CONFIG_DIR_OVERLAY (initialized by the caller script)
+    # GRAFANA_SERVER
+    # GF_SERVER_DOMAIN
+    # GF_SECURITY_ADMIN_PASSWORD
+    # GF_SERVER_ROOT_URL
+  
+    set -euo pipefail
+    trap 's=$?; echo >&2 "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
+  
+    function wait_for {
+      echo "Waiting for $1"
+      IFS=':' read -a data <<< $1
+      until printf "" 2>>/dev/null >>/dev/tcp/${data[0]}/${data[1]}; do
+        sleep 5
+      done
+      echo "Done"
+    }
+  
+    echo "OpenNMS Grafana Integration Script..."
+  
+    # Requirements
+    command -v jq >/dev/null 2>&1 || { echo >&2 "jq is required but it's not installed. Aborting."; exit 1; }
+    if [[ ${CONFIG_DIR_OVERLAY} == "" ]]; then
+      echo >&2 "CONFIG_DIR_OVERLAY cannot be empty. Aborting."
+      exit 1
+    fi
+  
+    # Wait for dependencies
+    wait_for ${GRAFANA_SERVER}:3000
+  
+    GRAFANA_AUTH="admin:${GF_SECURITY_ADMIN_PASSWORD}"
+  
+    # Configure Flow Dashboard Link
+    FLOW_DASHBOARD=$(curl -sSf -u "${GRAFANA_AUTH}" "http://${GRAFANA_SERVER}:3000/api/search?query=flow" | jq -r '.[0].url')
+    echo "Flow Dashboard: ${FLOW_DASHBOARD}"
+    if [ "${FLOW_DASHBOARD}" == "null" ]; then
+      echo "WARNING: cannot get Dashboard URL for the Deep Dive Tool"
+    else
+      echo "Creating ${CONFIG_DIR_OVERLAY}/org.opennms.netmgt.flows.rest.cfg"
+      cat <<EOF > ${CONFIG_DIR_OVERLAY}/org.opennms.netmgt.flows.rest.cfg
+    flowGraphUrl=https://${GF_SERVER_DOMAIN}${FLOW_DASHBOARD}?node=\$nodeId&interface=\$ifIndex
+    EOF
+    fi
+  
+    # Delete Grafana API Key if exists
+    KEY_ID=$(curl -sSf -u "${GRAFANA_AUTH}" "http://${GRAFANA_SERVER}:3000/api/auth/keys" | jq ".[] | select(.name==\"$(hostname)\") | .id")
+    if [ "${KEY_ID}" != "" ]; then
+      echo "WARNING: API Key ${KEY_ID} exist for $(hostname), deleting it prior re-creating it again"
+      curl -sSf -XDELETE -u "${GRAFANA_AUTH}" "http://${GRAFANA_SERVER}:3000/api/auth/keys/${KEY_ID}"
+      echo ""
+    fi
+  
+    # Create Grafana API Key and configure Grafana Box
+    GRAFANA_KEY=$(curl -sSf -u "${GRAFANA_AUTH}" -X POST -H "Content-Type: application/json" -d "{\"name\":\"$(hostname)\",\"role\": \"Viewer\"}" "http://${GRAFANA_SERVER}:3000/api/auth/keys" | jq -r .key)
+    if [ "${GRAFANA_KEY}" == "null" ]; then
+      echo "WARNING: cannot get Grafana Key for $(hostname)"
+    else
+      echo "Configuring Grafana Box for $(hostname)"
+      echo "Creating ${CONFIG_DIR_OVERLAY}/opennms.properties.d/grafana.properties"
+      cat <<EOF > ${CONFIG_DIR_OVERLAY}/opennms.properties.d/grafana.properties
+    org.opennms.grafanaBox.show=true
+    org.opennms.grafanaBox.hostname=${GRAFANA_SERVER}
+    org.opennms.grafanaBox.port=3000
+    org.opennms.grafanaBox.basePath=/
+    org.opennms.grafanaBox.apiKey=${GRAFANA_KEY}
+  
+    # Settings used to build links url in the grafana box in opennms
+    org.opennms.grafanaBox.link.protocol=https
+    org.opennms.grafanaBox.link.hostname=${GF_SERVER_DOMAIN}
+    org.opennms.grafanaBox.link.port=443
+    org.opennms.grafanaBox.link.basePath=${GF_SERVER_ROOT_URL}
+  
+    EOF
+    fi
+  onms-post-init.sh: |
+    #!/bin/bash
+    #
+    # External environment variables used by this script:
+    # OPENNMS_SERVER
+    # OPENNMS_HTTP_USER
+    # OPENNMS_HTTP_PASS
+    # OPENNMS_ADMIN_PASS
+    # ENABLE_GRAFANA
+    # GRAFANA_SERVER
+    # GF_SECURITY_ADMIN_PASSWORD
+  
+    set -euo pipefail
+    trap 's=$?; echo >&2 "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
+  
+    trap 'echo "Received SIGHUP: exiting."; exit 2' HUP
+    trap 'echo "Received SIGTERM: exiting."; exit 2' TERM
+  
+    function wait_for {
+      echo "Waiting for $1"
+      IFS=':' read -a data <<< $1
+      until printf "" 2>>/dev/null >>/dev/tcp/${data[0]}/${data[1]}; do
+        sleep 5
+      done
+      echo "Done"
+    }
+  
+    echo "OpenNMS Post-Initialization Script..."
+  
+    # Requirements
+    command -v curl >/dev/null 2>&1 || { echo >&2 "curl is required but it's not installed. Aborting."; exit 1; }
+    command -v jq >/dev/null 2>&1   || { echo >&2 "jq is required but it's not installed. Aborting.";   exit 1; }
+  
+    # Wait for dependencies
+    wait_for ${OPENNMS_SERVER}:8980
+  
+    ONMS_AUTH="admin:${OPENNMS_ADMIN_PASS}"
+  
+    if [[ ${ENABLE_GRAFANA} == "true" ]]; then
+      GRAFANA_AUTH="admin:${GF_SECURITY_ADMIN_PASSWORD}"
+      # Configure Grafana Endpoint for Reports
+      ID=$(curl -sSf -u "${ONMS_AUTH}" http://${OPENNMS_SERVER}:8980/opennms/rest/endpoints/grafana | jq ".[] | select(.uid=\"$(hostname)\") | .id") || true
+      if [[ $ID == "" ]]; then
+        GRAFANA_KEY=$(curl -sSf -u "${GRAFANA_AUTH}" -X POST -H "Content-Type: application/json" -d "{\"name\":\"$(hostname)\",\"role\": \"Viewer\"}" "http://${GRAFANA_SERVER}:3000/api/auth/keys" | jq -r .key)
+        if [[ ${GRAFANA_KEY} == "null" ]]; then
+          echo "WARNING: cannot get Grafana Key"
+        else
+          echo "Configuring Grafana Endpoint..."
+          curl -sSf -u "${ONMS_AUTH}" -X POST \
+            -H 'Content-Type: application/json' \
+            -d "{\"uid\":\"$(hostname)\",\"apiKey\":\"${GRAFANA_KEY}\",\"url\":\"http://${GRAFANA_SERVER}:3000\"}" \
+            "http://${OPENNMS_SERVER}:8980/opennms/rest/endpoints/grafana"
+        fi
+      else
+        echo "WARNING: Grafana Endpoint already configured"
+      fi
+      echo "Grafana is not enabled, not configuration Grafana Endpoint"
+    fi
+  
+    # Add user to access ReST API for Grafana, Sentinels and Minions
+    echo "Adding user ${OPENNMS_HTTP_USER} (for Grafana, Sentinels, and Minions)"
+    curl -sSf -u "${ONMS_AUTH}" -X POST \
+      -H "Content-Type: application/xml" \
+      -d "<user><user-id>${OPENNMS_HTTP_USER}</user-id><password>${OPENNMS_HTTP_PASS}</password><role>ROLE_REST</role><role>ROLE_MINION</role></user>" \
+      "http://${OPENNMS_SERVER}:8980/opennms/rest/users?hashPassword=true"
+  onms-sentinel-init.sh: |
+    #!/bin/bash
+    #
+    # Intended to be used as part of an InitContainer
+    # Designed for Horizon 29 or Meridian 2021 and 2022. Newer or older versions are not supported.
+    #
+    # External environment variables used by this script:
+    # POSTGRES_HOST
+    # POSTGRES_PORT
+    # POSTGRES_SSL_MODE
+    # POSTGRES_SSL_FACTORY
+    # OPENNMS_SERVER
+    # OPENNMS_INSTANCE_ID
+    # OPENNMS_DBNAME
+    # OPENNMS_DBUSER
+    # OPENNMS_DBPASS
+    # OPENNMS_DATABASE_CONNECTION_MAXPOOL
+    # KAFKA_BOOTSTRAP_SERVER
+    # KAFKA_SASL_USERNAME
+    # KAFKA_SASL_PASSWORD
+    # KAFKA_SASL_MECHANISM
+    # KAFKA_SECURITY_PROTOCOL
+    # ELASTICSEARCH_SERVER
+    # ELASTICSEARCH_USER
+    # ELASTICSEARCH_PASSWORD
+    # ELASTICSEARCH_INDEX_STRATEGY_FLOWS
+    # ELASTICSEARCH_NUM_SHARDS
+    # ELASTICSEARCH_REPLICATION_FACTOR
+    # NUM_LISTENER_THREADS
+  
+    set -euo pipefail
+    trap 's=$?; echo >&2 "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
+  
+    umask 002
+  
+    function wait_for {
+      echo "Waiting for $1"
+      IFS=':' read -a data <<< $1
+      until printf "" 2>>/dev/null >>/dev/tcp/${data[0]}/${data[1]}; do
+        sleep 5
+      done
+      echo "Done"
+    }
+  
+    echo "OpenNMS Sentinel Configuration Script..."
+  
+    # Defaults
+    OPENNMS_DATABASE_CONNECTION_MAXPOOL=${OPENNMS_DATABASE_CONNECTION_MAXPOOL-50}
+    NUM_LISTENER_THREADS=${NUM_LISTENER_THREADS-6}
+    KAFKA_SASL_MECHANISM=${KAFKA_SASL_MECHANISM-PLAIN}
+    KAFKA_SECURITY_PROTOCOL=${KAFKA_SECURITY_PROTOCOL-SASL_PLAINTEXT}
+    ELASTICSEARCH_INDEX_STRATEGY_FLOWS=${ELASTICSEARCH_INDEX_STRATEGY_FLOWS-daily}
+    ELASTICSEARCH_REPLICATION_FACTOR=${ELASTICSEARCH_REPLICATION_FACTOR-2}
+    ELASTICSEARCH_NUM_SHARDS=${ELASTICSEARCH_NUM_SHARDS-6}
+  
+    # Wait for Dependencies
+    if [[ -v ELASTICSEARCH_SERVER ]]; then
+      wait_for ${ELASTICSEARCH_SERVER}
+    fi
+    if [[ -v KAFKA_BOOTSTRAP_SERVER ]]; then
+      wait_for ${KAFKA_BOOTSTRAP_SERVER}
+    fi
+    wait_for ${POSTGRES_HOST}:${POSTGRES_PORT}
+    wait_for ${OPENNMS_SERVER}:8980
+  
+    OVERLAY_DIR=/opt/sentinel-etc-overlay
+  
+    # Configure the instance ID and Interface-to-Node cache
+    # Required when having multiple OpenNMS backends sharing a Kafka cluster or an Elasticsearch cluster.
+    if [ -n "${OPENNMS_INSTANCE_ID}" ]; then
+      cat <<EOF >> ${OVERLAY_DIR}/custom.system.properties
+    # Used for Kafka Topics
+    org.opennms.instance.id=${OPENNMS_INSTANCE_ID}
+    # Refresh Interface-to-Node cache every 2 hours
+    org.opennms.interface-node-cache.refresh-timer=7200000
+    fi
+  
+    cat <<EOF > ${OVERLAY_DIR}/org.opennms.netmgt.distributed.datasource.cfg
+    datasource.url=jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${OPENNMS_DBNAME}?sslmode=${POSTGRES_SSL_MODE}&sslfactory=${POSTGRES_SSL_FACTORY}
+    datasource.username=${OPENNMS_DBUSER}
+    datasource.password=${OPENNMS_DBPASS}
+    datasource.databaseName=${OPENNMS_DBNAME}
+    connection.pool.maxSize=${OPENNMS_DATABASE_CONNECTION_MAXPOOL}
+    EOF
+  
+    FEATURES_DIR=${OVERLAY_DIR}/featuresBoot.d
+    mkdir -p ${FEATURES_DIR}
+    cat <<EOF > ${FEATURES_DIR}/persistence.boot
+    sentinel-persistence
+    sentinel-jsonstore-postgres
+    sentinel-blobstore-noop
+    EOF
+  
+    if [[ -v ELASTICSEARCH_SERVER ]]; then
+      echo "Configuring Elasticsearch and Flows..."
+  
+      cat <<EOF > ${FEATURES_DIR}/flows.boot
+    sentinel-flows
+    EOF
+  
+      cat <<EOF > ${OVERLAY_DIR}/org.opennms.features.telemetry.adapters-ipfix.cfg
+    name=IPFIX
+    adapters.0.name=IPFIX-Adapter
+    adapters.0.class-name=org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter
+    queue.threads=${NUM_LISTENER_THREADS}
+    EOF
+  
+      cat <<EOF > ${OVERLAY_DIR}/org.opennms.features.telemetry.adapters-netflow5.cfg
+    name=Netflow-5
+    adapters.0.name=Netflow-5-Adapter
+    adapters.0.class-name=org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter
+    queue.threads=${NUM_LISTENER_THREADS}
+    EOF
+  
+      cat <<EOF > ${OVERLAY_DIR}/org.opennms.features.telemetry.adapters-netflow9.cfg
+    name=Netflow-9
+    adapters.0.name=Netflow-9-Adapter
+    adapters.0.class-name=org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter
+    queue.threads=${NUM_LISTENER_THREADS}
+    EOF
+  
+      cat <<EOF > ${OVERLAY_DIR}/org.opennms.features.flows.persistence.elastic.cfg
+    elasticUrl=https://${ELASTICSEARCH_SERVER}
+    globalElasticUser=${ELASTICSEARCH_USER}
+    globalElasticPassword=${ELASTICSEARCH_PASSWORD}
+    elasticIndexStrategy=${ELASTICSEARCH_INDEX_STRATEGY_FLOWS}
+    # The following settings should be consistent with your ES cluster
+    settings.index.number_of_shards=${ELASTICSEARCH_NUM_SHARDS}
+    settings.index.number_of_replicas=${ELASTICSEARCH_REPLICATION_FACTOR}
+    EOF
+  
+      if [ -n "${OPENNMS_INSTANCE_ID}" ]; then
+        PREFIX=$(echo ${OPENNMS_INSTANCE_ID} | tr '[:upper:]' '[:lower:]')-
+        cat <<EOF >> ${OVERLAY_DIR}/org.opennms.features.flows.persistence.elastic.cfg
+    indexPrefix=${PREFIX}
+    EOF
+      fi
+    fi
+  
+    if [[ -v KAFKA_BOOTSTRAP_SERVER ]]; then
+      echo "Configuring Kafka for Flows..."
+  
+      FILE_PREFIX="${OVERLAY_DIR}/org.opennms.core.ipc.sink.kafka"
+      echo "sentinel-kafka" > ${FEATURES_DIR}/kafka.boot
+  
+      cat <<EOF > ${FILE_PREFIX}.cfg
+    # Producers
+    bootstrap.servers=${KAFKA_BOOTSTRAP_SERVER}
+    acks=1
+    EOF
+  
+      cat <<EOF > ${FILE_PREFIX}.consumer.cfg
+    # Consumers
+    bootstrap.servers=${KAFKA_BOOTSTRAP_SERVER}
+    max.partition.fetch.bytes=5000000
+    EOF
+  
+      if [ -n "${OPENNMS_INSTANCE_ID}" ]; then
+        cat <<EOF >> ${FILE_PREFIX}.consumer.cfg
+    group.id=${OPENNMS_INSTANCE_ID}_Sentinel
+    EOF
+      fi
+  
+      for f in ${FILE_PREFIX}.cfg ${FILE_PREFIX}.consumer.cfg; do
+        cat <<EOF >> $f
+    # Security
+    security.protocol=${KAFKA_SECURITY_PROTOCOL}
+    sasl.mechanism=${KAFKA_SASL_MECHANISM}
+    EOF
+        if [[ -v KAFKA_SASL_USERNAME ]] &&  [[ -v KAFKA_SASL_PASSWORD ]]; then
+          if [[ -v KAFKA_SASL_MECHANISM ]] && [[ "${KAFKA_SASL_MECHANISM}" == *"SCRAM"* ]]; then
+            JAAS_CLASS="org.apache.kafka.common.security.scram.ScramLoginModule"
+          else
+            JAAS_CLASS="org.apache.kafka.common.security.plain.PlainLoginModule"
+          fi
+          cat <<EOF >> $f
+    sasl.jaas.config=${JAAS_CLASS} required username="${KAFKA_SASL_USERNAME}" password="${KAFKA_SASL_PASSWORD}";
+    EOF
+        fi
+      done
+    fi
+  onms-set-admin-password.pl: "#!/usr/bin/perl\n\nuse strict;\nuse Digest::MD5;\n\nmy
+    $opennms_home = \"/opt/opennms\";\n\nif ($#ARGV != 2) {\n\tdie(\"Incorrect number
+    of command-line arguments. Usage: $0 <users.xml file> <user> <password>\\n\");\n}\n\nmy
+    $users_xml = shift(@ARGV);\nmy $user = shift(@ARGV);\nmy $password = shift(@ARGV);\n\nmy
+    $digest = uc(Digest::MD5::md5_hex($password));\n\nopen(IN, \"<$users_xml\") || die(\"Could
+    not open $users_xml for reading: $!\\n\");\n$_ = join(\"\", <IN>);\nclose(IN);\n\nmy
+    $user_quoted = quotemeta($user);\n\ns%(<user>\\s*<user-id>$user_quoted</user-id>.*?)<password[^>]*>[^<]*</password>(.*?</user>\\s*)%\\1<password>$digest</password>\\2%s
+    || die(\"Did not find user '$user' in $users_xml\\n\");\n\nopen(OUT, \">$users_xml\")
+    || die(\"Could not open $users_xml for writing: $!\\n\");\nprint OUT $_;\nclose(OUT);\n"
+---
+# Source: horizon/templates/app-settings.configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-settings
+  namespace: default
+  labels:
+    helm.sh/chart: horizon-1.1.13
+    app.kubernetes.io/name: horizon
+    app.kubernetes.io/instance: monms
+    app.kubernetes.io/version: "33.0.1"
+    app.kubernetes.io/managed-by: Helm
+data:
+  TZ: "America/New_York"
+  DOMAIN: "monms.example.com"
+  POSTGRES_HOST: "onms-db.shared.svc"
+  POSTGRES_PORT: "5432"
+  POSTGRES_SSL_MODE: "require"
+  POSTGRES_SSL_FACTORY: "org.postgresql.ssl.LibPQFactory"
+  ENABLE_ALEC: "false"
+  ENABLE_ACLS: "false"
+  ENABLE_TELEMETRYD: "false"
+  ENABLE_CORTEX: "false"
+  ENABLE_TSS_DUAL_WRITE: "false"
+  ENABLE_GRAFANA: "false"
+  OPENNMS_INSTANCE_ID: ""
+  OPENNMS_SERVER: "onms-core.default.svc"
+  OPENNMS_DBNAME: "opennms"
+  OPENNMS_RRAS: RRA:AVERAGE:0.5:1:2016;RRA:AVERAGE:0.5:12:1488;RRA:AVERAGE:0.5:288:366;RRA:MAX:0.5:288:366;RRA:MIN:0.5:288:366
+  OPENNMS_ETC_UPDATE_POLICY: never
+  GRAFANA_SERVER: "grafana.default.svc"
+  GF_SERVER_DOMAIN: "grafana.monms.example.com" # Should match FQDN on the Ingress
+  GF_SERVER_ROOT_URL: "/"
+  GF_DATABASE_TYPE: "postgres"
+  GF_DATABASE_NAME: "grafana"
+  GF_DATABASE_SSL_MODE: "require"
+  GF_DATABASE_CA_CERT_PATH: "/etc/java/jks/postgresql-ca.crt"
+  GF_SESSION_PROVIDER: "postgres"
+  ON_OPENSHIFT: "false"
+---
+# Source: horizon/templates/opennms.etc.pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: onms-etc-pvc
+  namespace: default
+  labels:
+    app: onms-core
+    tier: storage
+    helm.sh/chart: horizon-1.1.13
+    app.kubernetes.io/name: horizon
+    app.kubernetes.io/instance: monms
+    app.kubernetes.io/version: "33.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  accessModes: # Assumes default StorageClass
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# Source: horizon/templates/opennms.rrd.pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: onms-rrd-pvc
+  namespace: default
+  labels:
+    app: onms-core
+    tier: storage
+    helm.sh/chart: horizon-1.1.13
+    app.kubernetes.io/name: horizon
+    app.kubernetes.io/instance: monms
+    app.kubernetes.io/version: "33.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  accessModes: # Assumes default StorageClass
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1000Gi
+---
+# Source: horizon/templates/opennms-core.service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: onms-core
+  namespace: default
+  labels:
+    app: onms-core
+    helm.sh/chart: horizon-1.1.13
+    app.kubernetes.io/name: horizon
+    app.kubernetes.io/instance: monms
+    app.kubernetes.io/version: "33.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  clusterIP: None
+  ports:
+  - port: 8980
+    name: http
+  - port: 8101
+    name: karaf
+    targetPort: 8101
+  - port: 1162
+    name: trapd
+    protocol: UDP
+    targetPort: 1162
+  - port: 10514
+    name: syslog
+    protocol: UDP
+    targetPort: 10514
+  selector:
+    app: onms-core
+    app.kubernetes.io/name: horizon
+    app.kubernetes.io/instance: monms
+---
+# Source: horizon/templates/opennms-core.statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: onms-core
+  namespace: default
+  labels:
+    app: onms-core
+    helm.sh/chart: horizon-1.1.13
+    app.kubernetes.io/name: horizon
+    app.kubernetes.io/instance: monms
+    app.kubernetes.io/version: "33.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  serviceName: onms-core
+  replicas: 1 # DO NOT CHANGE. The solution only allows 1 instance
+  selector:
+    matchLabels:
+      app: onms-core
+      app.kubernetes.io/name: horizon
+      app.kubernetes.io/instance: monms
+  template:
+    metadata:
+      labels:
+        app: onms-core
+        app.kubernetes.io/name: horizon
+        app.kubernetes.io/instance: monms
+      annotations:
+        rollme: "BUfl9"
+        kubectl.kubernetes.io/default-container: "onms"
+    spec:
+      securityContext:
+          sysctls:
+            - name: net.ipv4.ping_group_range
+              value: "0           2147483647"
+          fsGroup: 10001
+      terminationGracePeriodSeconds: 120
+      initContainers:
+      # Initializes/Updates OpenNMS Configuration
+      # Requires the same image/version used at runtime
+      - name: init
+        image: opennms/horizon:33.0.1
+        imagePullPolicy: IfNotPresent
+        securityContext:
+        command: [ bash, /scripts/onms-core-init.sh ]
+        envFrom:
+        - configMapRef:
+            name: app-settings
+        - secretRef:
+            name: app-credentials
+        env:
+        - name: OPENNMS_DATABASE_CONNECTION_MAXPOOL
+          value: "50"
+        volumeMounts:
+        - name: etc
+          mountPath: /opennms-etc # Required by the script - CONFIG_DIR
+        - name: deploy
+          mountPath: /opennms-deploy # Required by the script - DEPLOY_DIR
+        - name: overlay
+          mountPath: /opt/opennms-overlay # Required by the script - OVERLAY_DIR
+        - name: scripts
+          mountPath: /scripts # Required by the script
+      nodeSelector:
+        null
+      affinity:
+        null
+      tolerations:
+        null
+      containers:
+      - name: onms
+        image: opennms/horizon:33.0.1
+        securityContext:
+        imagePullPolicy: IfNotPresent
+        args:
+        - -s
+        ports:
+        - containerPort: 8101
+          name: karaf
+        - containerPort: 8980
+          name: http
+        - containerPort: 1162
+          name: trapd
+        - containerPort: 10514
+          name: syslog
+        envFrom:
+        - configMapRef:
+            name: app-settings
+        - secretRef:
+            name: app-credentials
+        volumeMounts:
+        - name: rrd
+          mountPath: /opennms-data/rrd
+        - name: etc
+          mountPath: /opt/opennms/etc
+        - name: deploy
+          mountPath: /opennms-deploy
+        - name: logs
+          mountPath: /opt/opennms/logs
+        - name: overlay
+          mountPath: /opt/opennms-overlay
+        - name: jks
+          mountPath: /etc/java/jks
+        - name: jks
+          mountPath: /opt/opennms/.postgresql/root.crt
+          subPath: postgresql-ca.crt
+        env:
+        - name: MEM_TOTAL_MB
+          valueFrom:
+            resourceFieldRef:
+              resource: requests.memory
+              divisor: 1Mi
+        - name: JAVA_OPTS
+          value: -Xms$(MEM_TOTAL_MB)m -Xmx$(MEM_TOTAL_MB)m -XX:+AlwaysPreTouch -XX:+UseG1GC -XX:+UseStringDeduplication
+        resources:
+          limits:
+            cpu: "2"
+            memory: 8Gi
+          requests:
+            cpu: "2"
+            memory: 4Gi
+        startupProbe:
+          httpGet:
+            path: /opennms/login.jsp
+            port: http
+          failureThreshold: 30
+          periodSeconds: 60
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /opennms/login.jsp
+            port: http
+          periodSeconds: 15
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /opennms/login.jsp
+            port: http
+          periodSeconds: 60
+          timeoutSeconds: 5
+      volumes:
+      - name: deploy
+        emptyDir: {}
+      - name: overlay
+        emptyDir: {}
+      - name: logs
+        emptyDir: {}
+      - name: scripts
+        configMap:
+          name: app-scripts
+      - name: jks
+        secret:
+          secretName: app-jks
+      - name: etc
+        persistentVolumeClaim:
+          claimName: onms-etc-pvc
+          readOnly: false
+      - name: rrd
+        persistentVolumeClaim:
+          claimName: onms-rrd-pvc
+          readOnly: false
+---
+# Source: horizon/templates/opennms-post-config.job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  creationTimestamp: null
+  name: onms-post-config
+  namespace: default
+  labels:
+    app: onms-core
+    helm.sh/chart: horizon-1.1.13
+    app.kubernetes.io/name: horizon
+    app.kubernetes.io/instance: monms
+    app.kubernetes.io/version: "33.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: init
+        image: opennms/horizon:33.0.1
+        imagePullPolicy: IfNotPresent
+        command: [ bash, /scripts/onms-post-init.sh ]
+        envFrom:
+        - configMapRef:
+            name: app-settings
+        - secretRef:
+            name: app-credentials
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+      volumes:
+      - name: scripts
+        configMap:
+          name: app-scripts
+---
+# Source: horizon/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: onms-ingress
+  namespace: default
+  labels:
+    helm.sh/chart: horizon-1.1.13
+    app.kubernetes.io/name: horizon
+    app.kubernetes.io/instance: monms
+    app.kubernetes.io/version: "33.0.1"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    ingress.kubernetes.io/affinity: cookie
+    ingress.kubernetes.io/session-cookie-name: route
+    ingress.kubernetes.io/session-cookie-hash: sha1
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: opennms-issuer
+spec:
+  ingressClassName: nginx
+  tls:
+    - secretName: onms-ingress-cert
+      hosts:
+        - onms-core.monms.example.com
+  rules:
+    - host: onms-core.monms.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: onms-core
+                port:
+                  number: 8980

@@ -1,0 +1,10 @@
+# @author Alejandro Galue <agalue@opennms.org>
+
+---
+bases:
+- ../reduced
+
+patchesStrategicMerge:
+- patches/common-settings.yaml
+- patches/external-access.yaml
+- patches/opennms.core.yaml

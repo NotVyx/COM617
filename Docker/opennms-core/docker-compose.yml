@@ -1,0 +1,35 @@
+services:
+  horizon:
+    image: opennms/horizon:33.1.3
+    container_name: horizon
+    hostname: horizon
+    sysctls:
+      net.ipv4.ping_group_range: "0 429496729"
+    environment:
+      POSTGRES_HOST: '172.16.14.4'
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: 'opennms'
+      POSTGRES_PASSWORD: '0p3nNM5'
+      POSTGRES_DBUSER: 'opennms'
+      POSTGRES_DBNAME: 'opennms'
+      POSTGRES_DBPASS: '0p3nNM5'
+      TZ: ${TIMEZONE:-Europe/London}
+    volumes:
+      - data-opennms:/opennms-data
+      - data-opennms-cfg:/opt/opennms/etc
+      - ./container-fs/opt/opennms/deploy:/opt/opennms/deploy
+      - ./container-fs/opt/opennms-overlay:/opt/opennms-overlay
+      - ./container-fs/etc/conf.d/confd.toml:/etc/confd/confd.toml
+    command: ["-s"]
+    ports:
+      - "8101:8101/tcp"
+      - "8980:8980/tcp"
+      - "10162:1162/udp"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "-I", "http://localhost:8980/opennms/login.jsp" ]
+      interval: 1m
+      timeout: 5s
+      retries: 3
+volumes:
+  data-opennms: {}
+  data-opennms-cfg: {}

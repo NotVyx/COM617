@@ -1,0 +1,93 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: hzn-core
+  labels:
+    app: hzn-core
+spec:
+  serviceName: hzn-core
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hzn-core
+  template:
+    metadata:
+      labels:
+        app: hzn-core
+    spec:
+      securityContext:
+        fsGroup: 10001
+        sysctls:
+          - name: net.ipv4.ping_group_range
+            value: "0 10001"
+      terminationGracePeriodSeconds: 120
+      initContainers:
+        - name: init-overlay-config
+          image: quay.io/labmonkeys/git:2.45.2.b3360
+          command: [ '/init.sh', ]
+          envFrom:
+            - configMapRef:
+                name: hzn-core-config
+          volumeMounts:
+            - name: overlay
+              mountPath: /data/opennms-overlay
+      containers:
+        - name: hzn-core
+          image: docker.io/opennms/horizon:33.1.3
+          imagePullPolicy: IfNotPresent
+          args:
+            - -s
+          ports:
+            - containerPort: 8101
+              name: karaf
+            - containerPort: 8980
+              name: webapp
+          envFrom:
+            - configMapRef:
+                name: hzn-core-config
+          volumeMounts:
+            - name: logs
+              mountPath: /opt/opennms/logs
+            - name: overlay
+              mountPath: /opt/opennms-overlay
+            - name: rrd
+              mountPath: /opt/opennms/share/rrd
+            - name: deploy
+              mountPath: /opt/opennms/deploy
+            - name: imports
+              mountPath: /opt/opennms/etc/imports
+            - name: fs
+              mountPath: /opt/opennms/etc/foreign-sources
+          resources:
+            limits:
+              cpu: '2'
+              memory: 6Gi
+            requests:
+              cpu: '1'
+              memory: 6Gi
+      volumes:
+        - name: logs
+          persistentVolumeClaim:
+            claimName: hzn-logs
+            readOnly: false
+        - name: overlay
+          persistentVolumeClaim:
+            claimName: hzn-overlay
+            readOnly: false
+        - name: rrd
+          persistentVolumeClaim:
+            claimName: hzn-data
+            readOnly: false
+        - name: deploy
+          persistentVolumeClaim:
+            claimName: hzn-deploy
+            readOnly: false
+        - name: imports
+          persistentVolumeClaim:
+            claimName: hzn-imports
+            readOnly: false
+        - name: fs
+          persistentVolumeClaim:
+            claimName: hzn-fs
+            readOnly: false

@@ -1,0 +1,34 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-https
+  namespace: default
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`onms.forrest.one`)
+      kind: Rule
+      services:
+        - name: hzn-core-webapp-tcp
+          port: 8980
+  tls:
+    secretName: onms-forrest-one-cert
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-http
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`onms.forrest.one`)
+      kind: Rule
+      services:
+        - name: hzn-core-webapp-tcp
+          port: 8980

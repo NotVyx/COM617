@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hzn-core-config
+data:
+  TZ: "UTC"
+  OPENNMS_TIMESERIES_STRATEGY: "rrd"
+  POSTGRES_HOST: "172.16.15.178"
+  POSTGRES_PORT: "5432"
+  POSTGRES_USER: "opennms"
+  POSTGRES_PASSWORD: '0p3nNM5'
+  OPENNMS_DBNAME: "opennms"
+  OPENNMS_DBPASS: '0p3nNM5'
+  OPENNMS_DBUSER: "opennms"
+  SERVICE_NAME: "hzn-core"
+  GIT_REPO: "NotVyx/COM617-Config"
+  GIT_HOST: "github.com"
+  GIT_BRANCH: "main"

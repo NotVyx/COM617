@@ -1,0 +1,16 @@
+---
+namespace: default
+kind: Kustomization
+resources:
+#ReverseProxy
+- ./traefik/ClusterRole.yaml
+- ./traefik/deployment.yaml
+- ./traefik/service.yaml
+- ./traefik/ingress.yaml
+#OpenNMS
+- ./opennms/namespace.yaml
+- ./opennms/hzn-core.configmap.yaml
+- ./opennms/persistentvolumeclaim.yaml
+- ./opennms/hzn-core.statefulset.yaml
+- ./opennms/hzn-core.service.karaf.yaml
+- ./opennms/hzn-core.service.web.yaml

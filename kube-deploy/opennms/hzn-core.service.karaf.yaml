@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hzn-core-karaf-tcp
+  labels:
+    app: hzn-core
+spec:
+  ports:
+    - port: 8101
+      name: karaf
+  selector:
+    app: hzn-core
+  type: ClusterIP
+

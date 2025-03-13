@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hzn-core-grpc-tcp
+  labels:
+    app: hzn-core
+spec:
+  ports:
+   - protocol: TCP
+     port: 8990
+     targetPort: 8990
+#     nodePort: 30008
+     name: grpc
+  selector:
+    app: hzn-core
+  type: LoadBalancer

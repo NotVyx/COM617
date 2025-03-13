@@ -41,6 +41,8 @@ spec:
           ports:
             - containerPort: 8101
               name: karaf
+            - containerPort: 8990
+              name: grpc
             - containerPort: 8980
               name: webapp
           envFrom:
@@ -61,10 +63,10 @@ spec:
               mountPath: /opt/opennms/etc/foreign-sources
           resources:
             limits:
-              cpu: '2'
-              memory: 6Gi
+              cpu: '4'
+              memory: 8Gi
             requests:
-              cpu: '1'
+              cpu: '2'
               memory: 6Gi
       volumes:
         - name: logs

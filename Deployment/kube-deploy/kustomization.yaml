@@ -14,3 +14,4 @@ resources:
 - ./opennms/hzn-core.statefulset.yaml
 - ./opennms/hzn-core.service.karaf.yaml
 - ./opennms/hzn-core.service.web.yaml
+- ./opennms/hzn-core.service.grpc.yaml

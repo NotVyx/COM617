@@ -15,9 +15,4 @@ spec:
     - protocol: TCP
       port: 443
       targetPort: 443
-      name: websecure     
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
-      name: admin
-#  ExternalIP: 172.16.15.43
+      name: websecure 

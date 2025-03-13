@@ -11,6 +11,10 @@ spec:
       targetPort: 8980
       protocol: TCP
       name: webapp
+#    - port: 8990
+#      targetPort: 8990
+#      protocol: TCP
+#      name: grpc
   selector:
     app: hzn-core
   type: ClusterIP

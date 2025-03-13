@@ -15,6 +15,11 @@ spec:
       services:
         - name: hzn-core-webapp-tcp
           port: 8980
+    - match: Host('onms-grpc.forrest.one')
+      kind: Rule
+      services:
+        - name: hzn-core-webapp-tcp
+          port: 8990   
   tls:
     secretName: onms-forrest-one-cert
 ---

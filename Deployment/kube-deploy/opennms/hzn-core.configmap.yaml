@@ -4,7 +4,7 @@ kind: ConfigMap
 metadata:
   name: hzn-core-config
 data:
-  TZ: "UTC"
+  TZ: "Europe/London"
   OPENNMS_TIMESERIES_STRATEGY: "rrd"
   POSTGRES_HOST: "172.16.15.178"
   POSTGRES_PORT: "5432"
@@ -17,3 +17,4 @@ data:
   GIT_REPO: "NotVyx/COM617-Config"
   GIT_HOST: "github.com"
   GIT_BRANCH: "main"
+  JAVA_OPTS: "-Xmx2048m -XX:MaxMetaspaceSize=512m -agentlib:jdwp=transport=dt_socket,server=y,address=*:8001,suspend=n"

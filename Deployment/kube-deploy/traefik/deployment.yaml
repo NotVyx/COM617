@@ -13,6 +13,7 @@ spec:
       labels:
         app: traefik
     spec:
+      serviceAccountName: traefik-account
       containers:
         - name: traefik
           image: traefik:v3.3
@@ -21,14 +22,12 @@ spec:
             - "--providers.kubernetesingress"
             - "--entrypoints.web.address=:80" 
             - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-            - "--entrypoints.websecure.address=443"
+            - "--entrypoints.websecure.address=:443"
           ports:
             - name: web
               containerPort: 80
             - name: websecure
               containerPort: 443
-            - name: admin
-              containerPort: 8080
           securityContext:
             capabilities:
               drop:

@@ -1,0 +1,79 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "eu-west-2"  # London Region
+}
+
+# Create a VPC (optional, use an existing one if needed)
+resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
+}
+
+# Create a Public Subnet
+resource "aws_subnet" "public" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.1.0/24"
+  map_public_ip_on_launch = true
+}
+
+# Create Security Group for EC2 (Allow SSH + K3s Access)
+resource "aws_security_group" "ec2_sg" {
+  vpc_id = aws_vpc.main.id
+
+  # Allow SSH (Port 22) - Required for EC2 Instance Connect
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Replace with your IP for better security
+  }
+
+  # Allow K3s API Server (Port 6443)
+  ingress {
+    from_port   = 6443
+    to_port     = 6443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Change to restrict access
+  }
+
+  # Allow all outbound traffic
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# Deploy EC2 Instance with K3s and EC2 Instance Connect
+resource "aws_instance" "k3s" {
+  ami                    = "ami-02df9ea15c1778c9c"  # Ubuntu 22.04 in eu-west-2
+  instance_type          = "t2.micro"
+  subnet_id              = aws_subnet.public.id
+  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
+  key_name               = "my-key"  # Replace with your AWS Key Pair
+
+  # Install K3s & Enable EC2 Instance Connect
+  user_data = <<-EOF
+              #!/bin/bash
+              echo "Installing EC2 Instance Connect..."
+              sudo apt update && sudo apt install ec2-instance-connect -y
+              sudo systemctl enable ec2-instance-connect
+              sudo systemctl start ec2-instance-connect
+
+              echo "Installing K3s..."
+              curl -sfL https://get.k3s.io | sh -
+              echo "K3s Installed Successfully!"
+              EOF
+
+  tags = {
+    Name = "K3s-Instance"
+  }
+}

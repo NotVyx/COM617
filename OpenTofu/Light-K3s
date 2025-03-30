@@ -23,6 +23,50 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 }
 
+# Create an Internet Gateway and Attach it to the VPC
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+}
+
+# Associate a Route Table with the Public Subnet
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+}
+
+# Create a Route for Internet Access
+resource "aws_route" "internet_access" {
+  route_table_id         = aws_route_table.public.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.main.id
+}
+
+# Associate the Route Table with the Public Subnet
+resource "aws_route_table_association" "public_association" {
+  subnet_id      = aws_subnet.public.id
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "eu-west-2"  # London Region
+}
+
+# Create a VPC (optional, use an existing one if needed)
+resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
+}
+
+# Create a Public Subnet
+resource "aws_subnet" "public" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.1.0/24"
+  map_public_ip_on_launch = true  route_table_id = aws_route_table.public.id
+}
 # Create Security Group for EC2 (Allow SSH + K3s Access)
 resource "aws_security_group" "ec2_sg" {
   vpc_id = aws_vpc.main.id
@@ -32,7 +76,7 @@ resource "aws_security_group" "ec2_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Replace with your IP for better security
+    cidr_blocks = ["0.0.0.0/0"]  
   }
 
   # Allow K3s API Server (Port 6443)
@@ -54,25 +98,25 @@ resource "aws_security_group" "ec2_sg" {
 
 # Deploy EC2 Instance with K3s and EC2 Instance Connect
 resource "aws_instance" "k3s" {
-  ami                    = "ami-02df9ea15c1778c9c"  # Ubuntu 22.04 in eu-west-2
+  ami                    = "ami-0a94c8e4ca2674d5a"
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
-  key_name               = "my-key"  # Replace with your AWS Key Pair
+  key_name               = "my-keypair"  
 
   # Install K3s & Enable EC2 Instance Connect
   user_data = <<-EOF
-              #!/bin/bash
-              echo "Installing EC2 Instance Connect..."
-              sudo apt update && sudo apt install ec2-instance-connect -y
-              sudo systemctl enable ec2-instance-connect
-              sudo systemctl start ec2-instance-connect
+            #!/bin/bash
+            set -e
 
-              echo "Installing K3s..."
-              curl -sfL https://get.k3s.io | sh -
-              echo "K3s Installed Successfully!"
-              EOF
+            sudo apt update && sudo apt upgrade -y
+            sudo apt install -y curl
 
+            curl -sfL https://get.k3s.io | sh -
+
+            sudo systemctl enable k3s
+            
+            EOF
   tags = {
     Name = "K3s-Instance"
   }

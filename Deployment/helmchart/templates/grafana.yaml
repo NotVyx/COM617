@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chart.fullname" . }}-grafana
+  labels:
+  {{- include "chart.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.grafana.type }}
+  selector:
+    app: grafana
+    {{- include "chart.selectorLabels" . | nindent 4 }}
+  ports:
+  {{- .Values.grafana.ports | toYaml | nindent 2 }}

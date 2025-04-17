@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}-grafana
+  labels:
+    app: grafana
+  {{- include "chart.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: grafana
+    {{- include "chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: grafana
+      {{- include "chart.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.grafana.grafana.image.repository }}:{{ .Values.grafana.grafana.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.grafana.grafana.imagePullPolicy }}
+        livenessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: 3000
+          timeoutSeconds: 1
+        name: grafana
+        ports:
+        - containerPort: 3000
+          name: http-grafana
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /robots.txt
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 2
+        resources: {{- toYaml .Values.grafana.grafana.resources | nindent 10 }}
+        volumeMounts:
+        - mountPath: /var/lib/grafana
+          name: grafana-pv
+      securityContext: {{- toYaml .Values.grafana.podSecurityContext | nindent 8 }}
+      volumes:
+      - name: grafana-pv
+        persistentVolumeClaim:
+          claimName: {{ include "chart.fullname" . }}-grafana-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}-traefik
+  labels:
+  {{- include "chart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.traefik.replicas }}
+  selector:
+    matchLabels:
+      app: traefik
+    {{- include "chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: traefik
+      {{- include "chart.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - args: {{- toYaml .Values.traefik.traefik.args | nindent 8 }}
+        env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.traefik.traefik.image.repository }}:{{ .Values.traefik.traefik.image.tag
+          | default .Chart.AppVersion }}
+        name: traefik
+        ports:
+        - containerPort: 80
+          name: web
+        - containerPort: 443
+          name: websecure
+        resources: {}
+        securityContext: {{- toYaml .Values.traefik.traefik.containerSecurityContext |
+          nindent 10 }}
+      serviceAccountName: {{ include "chart.fullname" . }}-traefik-account

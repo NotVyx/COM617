@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "chart.fullname" . }}-hzn-core
+  labels:
+    app: hzn-core
+  {{- include "chart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.hznCore.replicas }}
+  selector:
+    matchLabels:
+      app: hzn-core
+  serviceName: {{ include "chart.fullname" . }}-hzn-core
+  template:
+    metadata:
+      labels:
+        app: hzn-core
+    spec:
+      containers:
+      - args: {{- toYaml .Values.hznCore.hznCore.args | nindent 8 }}
+        env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        envFrom:
+        - configMapRef:
+            name: {{ include "chart.fullname" . }}-hzn-core-config
+        image: {{ .Values.hznCore.hznCore.image.repository }}:{{ .Values.hznCore.hznCore.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.hznCore.hznCore.imagePullPolicy }}
+        name: hzn-core
+        ports:
+        - containerPort: 8101
+          name: karaf
+        - containerPort: 61616
+          name: activemq
+        - containerPort: 8980
+          name: webapp
+        resources: {}
+        volumeMounts:
+        - mountPath: /opt/opennms/logs
+          name: logs
+        - mountPath: /opt/opennms-overlay
+          name: overlay
+        - mountPath: /opt/opennms/share/rrd
+          name: rrd
+        - mountPath: /opt/opennms/deploy
+          name: deploy
+        - mountPath: /opt/opennms/etc/imports
+          name: imports
+        - mountPath: /opt/opennms/etc/foreign-sources
+          name: fs
+        readinessProbe:
+          tcpSocket:
+            port: 8980
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 3
+          successThreshold: 1
+          timeoutSeconds: 5
+      initContainers:
+      - command:
+        - /init.sh
+        env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        envFrom:
+        - configMapRef:
+            name: {{ include "chart.fullname" . }}-hzn-core-config
+        image: {{ .Values.hznCore.initOverlayConfig.image.repository }}:{{ .Values.hznCore.initOverlayConfig.image.tag
+          | default .Chart.AppVersion }}
+        name: init-overlay-config
+        resources: {}
+        volumeMounts:
+        - mountPath: /data/opennms-overlay
+          name: overlay
+      securityContext: {{- toYaml .Values.hznCore.podSecurityContext | nindent 8 }}
+      terminationGracePeriodSeconds: 120
+      volumes:
+      - name: logs
+        persistentVolumeClaim:
+          claimName: {{ include "chart.fullname" . }}-hzn-logs
+      - name: overlay
+        persistentVolumeClaim:
+          claimName: {{ include "chart.fullname" . }}-hzn-overlay
+      - name: rrd
+        persistentVolumeClaim:
+          claimName: {{ include "chart.fullname" . }}-hzn-data
+      - name: deploy
+        persistentVolumeClaim:
+          claimName: {{ include "chart.fullname" . }}-hzn-deploy
+      - name: imports
+        persistentVolumeClaim:
+          claimName: {{ include "chart.fullname" . }}-hzn-imports
+      - name: fs
+        persistentVolumeClaim:
+          claimName: {{ include "chart.fullname" . }}-hzn-fs
+
+  updateStrategy: {}

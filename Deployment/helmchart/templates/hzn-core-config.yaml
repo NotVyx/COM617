@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "chart.fullname" . }}-hzn-core-config
+  labels:
+  {{- include "chart.labels" . | nindent 4 }}
+data:
+  GIT_BRANCH: {{ .Values.hznCoreConfig.gitBranch | quote }}
+  GIT_HOST: {{ .Values.hznCoreConfig.gitHost | quote }}
+  GIT_REPO: {{ .Values.hznCoreConfig.gitRepo | quote }}
+  JAVA_OPTS: {{ .Values.hznCoreConfig.javaOpts | quote }}
+  OPENNMS_DBNAME: {{ .Values.hznCoreConfig.opennmsDbname | quote }}
+  OPENNMS_DBPASS: {{ .Values.hznCoreConfig.opennmsDbpass | quote }}
+  OPENNMS_DBUSER: {{ .Values.hznCoreConfig.opennmsDbuser | quote }}
+  OPENNMS_TIMESERIES_STRATEGY: {{ .Values.hznCoreConfig.opennmsTimeseriesStrategy
+    | quote }}
+  POSTGRES_HOST: {{ .Values.hznCoreConfig.postgresHost | quote }}
+  POSTGRES_PASSWORD: {{ .Values.hznCoreConfig.postgresPassword | quote }}
+  POSTGRES_PORT: {{ .Values.hznCoreConfig.postgresPort | quote }}
+  POSTGRES_USER: {{ .Values.hznCoreConfig.postgresUser | quote }}
+  SERVICE_NAME: {{ .Values.hznCoreConfig.serviceName | quote }}
+  TZ: {{ .Values.hznCoreConfig.tz | quote }}

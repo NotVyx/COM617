@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chart.fullname" . }}-hzn-core-webapp-tcp
+  labels:
+    app: hzn-core
+  {{- include "chart.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.hznCoreWebappTcp.type }}
+  selector:
+    app: hzn-core
+    {{- include "chart.selectorLabels" . | nindent 4 }}
+  ports:
+  {{- .Values.hznCoreWebappTcp.ports | toYaml | nindent 2 }}

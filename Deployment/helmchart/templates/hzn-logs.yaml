@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "chart.fullname" . }}-hzn-logs
+  labels:
+    app: hzn-core
+    tier: storage
+  {{- include "chart.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pvc.hznLogs.storageRequest | quote }}
+  storageClassName: {{ .Values.pvc.hznLogs.storageClass | quote }}

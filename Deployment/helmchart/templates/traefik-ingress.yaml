@@ -1,0 +1,47 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "chart.fullname" . }}-traefik-http
+  labels:
+  {{- include "chart.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+  - web
+  routes:
+  - kind: Rule
+    match: Host(`onms.forrest.one`)
+    services:
+    - name: {{ include "chart.fullname" . }}-hzn-core-webapp-tcp
+      port: 8980
+  - kind: Rule
+    match: Host(`grafana.forrest.one`)
+    services:
+    - name: {{ include "chart.fullname" . }}-grafana
+      port: 3000
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "chart.fullname" . }}-traefik-https
+  labels:
+  {{- include "chart.labels" . | nindent 4 }}
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`onms.forrest.one`)
+    services:
+    - name: {{ include "chart.fullname" . }}-hzn-core-webapp-tcp
+      port: 8980
+  - kind: Rule
+    match: Host(`grafana.forrest.one`)
+    services:
+    - name: {{ include "chart.fullname" . }}-grafana
+      port: 3000
+  tls:
+    certResolver: resolver
+    #secretName: onms-forrest-one-cert

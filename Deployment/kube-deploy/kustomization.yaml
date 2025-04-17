@@ -15,3 +15,7 @@ resources:
 - ./opennms/hzn-core.service.karaf.yaml
 - ./opennms/hzn-core.service.web.yaml
 - ./opennms/hzn-core.service.grpc.yaml
+#Grafana
+- ./grafana/service.yaml
+- ./grafana/deployment.yaml
+- ./grafana/pvc.yaml

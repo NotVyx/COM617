@@ -15,11 +15,11 @@ spec:
       services:
         - name: hzn-core-webapp-tcp
           port: 8980
-    - match: Host('onms-grpc.forrest.one')
+    - match: Host('grafana.forrest.one')
       kind: Rule
       services:
-        - name: hzn-core-webapp-tcp
-          port: 8990   
+        - name: grafana
+          port: 3000   
   tls:
     secretName: onms-forrest-one-cert
 ---
@@ -32,8 +32,8 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`onms.forrest.one`)
+    - match: Host(`grafana.forrest.one`)
       kind: Rule
       services:
-        - name: hzn-core-webapp-tcp
-          port: 8980
+        - name: grafana
+          port: 3000

@@ -1,22 +1,17 @@
 #!/bin/bash
 set -euxo pipefail
 
-#Update System
 sudo apt update -y && sudo apt upgrade -y
-#Install Pre-Requisites
 sudo apt install -y curl git
-#Install Rancher K3s (Kubernetes)
 curl -sfL https://get.k3s.io | sh -
+echo "K3s Deployed"
 
 cd /home/ubuntu
-#Probably shouldn't have the token as plain text, but the cloudinit would be readable anyway. The token is read-only, so no risk to the github repo.
 git clone https://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@github.com/NotVyx/COM617.git
 cd ./COM617/Deployment/kustomize
-#Updates the OpenNMS configmap with the generated ones from TOFU
+
 sudo sed -i "s|PLACEHOLDER_POSTGREHOST|${postgres_host}|" ./opennms/hzn-core.configmap.yaml
 sudo sed -i "s|PLACEHOLDER_ONMSPASSWORD|${onms_password}|" ./opennms/hzn-core.configmap.yaml
 sudo sed -i "s|PLACEHOLDER_POSTGREPASSWORD|${postgres_password}|" ./opennms/hzn-core.configmap.yaml
-#Install Traefik CRD
-kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v2.10/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml
-#Deploy Kustomize Deployment
+sudo kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v2.10/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml
 sudo kubectl apply -k .

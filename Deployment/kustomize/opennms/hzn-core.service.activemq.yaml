@@ -1,16 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: hzn-core-grpc-tcp
+  name: hzn-core-activemq-tcp
   labels:
     app: hzn-core
 spec:
   ports:
    - protocol: TCP
-     port: 8990
-     targetPort: 8990
-#     nodePort: 30008
-     name: grpc
+     port: 61616
+     targetPort: 61616
+     name: activemq
   selector:
     app: hzn-core
   type: LoadBalancer

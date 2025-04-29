@@ -7,7 +7,7 @@ You must install this on a server or your machine along with AWS CLI
 https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
 
-###Login to AWS
+### Login to AWS
 Generate an Access Token through your AWS profile. As best practice, this should not be the root account. 
 ```
 $ aws configure
@@ -61,6 +61,6 @@ OpenTofu used the selected providers to generate the following execution plan. R
 actions are indicated with the following symbols:
   + create
 
-OpenTofu will perform the following actions:
+OpenTofu will perform the following actions: ...
 ```
 Tofu will prompt you to confirm the actions, if you are happy to continue, type 'yes'.

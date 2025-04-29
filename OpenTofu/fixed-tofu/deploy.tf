@@ -23,7 +23,7 @@ resource "aws_key_pair" "generated_onms_key" {
 resource "random_password" "postgres_password" {
   length             = 20
   special            = true
-  override_special   = "_%@#-"  # Only valid special characters for RDS
+  override_special   = "!#$%^&*()-_=+:,.<>?~"  # Only valid special characters for RDS
   upper              = true
   lower              = true
 }
@@ -32,7 +32,7 @@ resource "random_password" "postgres_password" {
 resource "random_password" "ONMS_password" {
   length             = 20
   special            = true
-  override_special   = "_%@#-"  # Only valid special characters for RDS
+  override_special   = "!#$%^&*()-_=+:,.<>?~"  # Only valid special characters for RDS
   upper              = true
   lower              = true
 }
@@ -128,6 +128,7 @@ resource "aws_db_subnet_group" "rds_subnet" {
 resource "aws_db_instance" "opennms_db" {
   identifier             = "opennms-db"
   engine                 = "postgres"
+  engine_version         = "14.11"
   instance_class         = "db.t3.micro"
   allocated_storage      = 20
   username               = "postgre"
@@ -144,7 +145,7 @@ resource "aws_db_instance" "opennms_db" {
 
 # Outputs
 output "ec2_public_ip" {
-  value = aws_instance.k3s.public_ip
+  value = aws_instance.OpenNMS.public_ip
 }
 
 output "rds_endpoint" {
@@ -156,6 +157,13 @@ resource "aws_security_group" "ec2_sg" {
   vpc_id = aws_vpc.main.id
 
   ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "SSH"
+  }
+    ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -189,21 +197,27 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
-# EC2 Instance with K3s
-resource "aws_instance" "k3s" {
+# EC2 Instance with OpenNMS & K3s
+resource "aws_instance" "OpenNMS" {
   ami                    = "ami-0a94c8e4ca2674d5a"
-  instance_type          = "t2.micro"
+  instance_type          = "t2.medium"
   subnet_id              = aws_subnet.public_a.id
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
   key_name               = aws_key_pair.generated_onms_key.key_name
 
   user_data = templatefile("${path.module}/deploy.sh.tmpl", {
-    postgres_host     = aws_db_instance.opennms_db.endpoint
+    postgres_host     = split(":", aws_db_instance.opennms_db.endpoint)[0]
     onms_password     = random_password.ONMS_password.result
     postgres_password = random_password.postgres_password.result
   })
 
+  root_block_device {
+    volume_size = 20           
+    volume_type = "gp3"            
+    delete_on_termination = true
+  }
+
   tags = {
-    Name = "K3s-Instance"
+    Name = "OpenNMS"
   }
 }

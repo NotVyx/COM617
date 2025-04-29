@@ -6,6 +6,16 @@ https://opentofu.org/docs/intro/install/
 You must install this on a server or your machine along with AWS CLI
 https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
+## File information
+all 3 files are important for this deployment. 
+> deploy.sh.tmpl
+This file is a bash script which is ran on the destination ec2 instance through the cloud-init which is run on first launch.
+> deploy.tf
+This file is the tofu file, this defines what resources will be created, including the subnets, RDS (PostgreSQL 14) and the security groups required for the deployment to function.
+> id_rsa.pub
+You can change this to any public ssh key, you will need the private key to access the servers ssh console remotely. 
+
+## Deployment
 
 ### Login to AWS
 Generate an Access Token through your AWS profile. As best practice, this should not be the root account. 

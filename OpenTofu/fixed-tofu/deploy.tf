@@ -128,7 +128,7 @@ resource "aws_db_subnet_group" "rds_subnet" {
 resource "aws_db_instance" "opennms_db" {
   identifier             = "opennms-db"
   engine                 = "postgres"
-  engine_version         = "14.11"
+  engine_version         = "14.17"
   instance_class         = "db.t3.micro"
   allocated_storage      = 20
   username               = "postgre"

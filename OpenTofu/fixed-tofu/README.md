@@ -7,7 +7,7 @@ You must install this on a server or your machine along with AWS CLI
 https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
 ## File information
-all 3 files are important for this deployment. 
+All 3 files are important for this deployment. 
 
 `deploy.sh.tmpl` is a bash script which is ran on the destination ec2 instance through the cloud-init which is run on first launch.
 

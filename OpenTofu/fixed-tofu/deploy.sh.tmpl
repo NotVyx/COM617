@@ -14,7 +14,7 @@ sudo kubectl create secret tls onms-forrest-one-cert --cert=../SSL/cert1.pem --k
 sudo sed -i "s|PLACEHOLDER_POSTGREHOST|${postgres_host}|" ./opennms/hzn-core.configmap.yaml
 sudo sed -i "s|PLACEHOLDER_ONMSPASSWORD|${onms_password}|" ./opennms/hzn-core.configmap.yaml
 sudo sed -i "s|PLACEHOLDER_POSTGREPASSWORD|${postgres_password}|" ./opennms/hzn-core.configmap.yaml
-kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v3.3/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml
-kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v3.3/docs/content/reference/dynamic-configuration/kubernetes-crd-rbac.yml
+sudo kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v3.3/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml
+sudo kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v3.3/docs/content/reference/dynamic-configuration/kubernetes-crd-rbac.yml
 
 sudo kubectl apply -k .

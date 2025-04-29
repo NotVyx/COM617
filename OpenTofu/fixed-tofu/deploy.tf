@@ -174,7 +174,7 @@ resource "aws_security_group" "ec2_sg" {
     to_port     = 61616
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-    description = "ONMS-ActiveMQ
+    description = "ONMS-ActiveMQ"
   }
 
   egress {

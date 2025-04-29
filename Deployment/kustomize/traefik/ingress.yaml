@@ -1,39 +1,26 @@
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: traefik-https
+  name: traefik-ingress
   namespace: default
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
+
 spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`onms.forrest.one`)
-      kind: Rule
-      services:
-        - name: hzn-core-webapp-tcp
-          port: 8980
-    - match: Host('grafana.forrest.one')
-      kind: Rule
-      services:
-        - name: grafana
-          port: 3000   
+  rules:
+  - host: onms.forrest.one
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: hzn-core-webapp-tcp
+            port:
+              number: 8980
+  # Only selects which certificate(s) should be loaded from the secret, in order to terminate TLS.
+  # Doesn't enable TLS for that ingress (hence for the underlying router).
+  # Please see the TLS annotations on ingress made for that purpose.
   tls:
-    secretName: onms-forrest-one-cert
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: traefik-http
-  namespace: default
-spec:
-  entryPoints:
-    - web
-  routes:
-    - match: Host(`grafana.forrest.one`)
-      kind: Rule
-      services:
-        - name: grafana
-          port: 3000
+  - secretName: onms-forrest-one-cert

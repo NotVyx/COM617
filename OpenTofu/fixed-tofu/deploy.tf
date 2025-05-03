@@ -1,3 +1,25 @@
+variable "FQDN_ONMS" {
+  type = string
+  description = "FQDN for the OpenNMS Deployment"
+
+  validation {
+    condition = can(regex("^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$", var.FQDN_ONMS))
+    error_message = "That doesn't appear to be a valid FQDN. E.g. 'onms.forrest.one'"
+  }
+
+}
+variable "FQDN_GRAFANA" {
+  type = string
+  description = "FQDN for the Grafana Deployment"
+
+  validation {
+    condition = can(regex("^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$", var.FQDN_GRAFANA))
+    error_message = "That doesn't appear to be a valid FQDN. E.g. 'grafana.forrest.one'"
+  }
+
+}
+
+
 terraform {
   required_providers {
     aws = {
@@ -209,6 +231,8 @@ resource "aws_instance" "OpenNMS" {
     postgres_host     = split(":", aws_db_instance.opennms_db.endpoint)[0]
     onms_password     = random_password.ONMS_password.result
     postgres_password = random_password.postgres_password.result
+    fqdn_onms         = var.FQDN_ONMS
+    fqdn_grafana      = var.FQDN_GRAFANA
   })
 
   root_block_device {

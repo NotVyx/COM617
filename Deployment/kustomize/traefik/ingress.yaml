@@ -9,7 +9,7 @@ metadata:
 
 spec:
   rules:
-  - host: onms.forrest.one
+  - host: PLACEHOLDER_FQDN_ONMS
     http:
       paths:
       - path: /
@@ -19,7 +19,7 @@ spec:
             name: hzn-core-webapp-tcp
             port:
               number: 8980
-  - host: grafana.forrest.one
+  - host: PLACEHOLDER_FQDN_GRAFANA
     http:
       paths:
       - path: /

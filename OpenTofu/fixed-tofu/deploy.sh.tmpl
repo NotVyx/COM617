@@ -11,7 +11,6 @@ echo "K3s Deployed"
 
 git clone https://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@github.com/NotVyx/COM617.git
 cd ./COM617/Deployment/kustomize
-sudo kubectl create secret tls onms-forrest-one-cert --cert=../SSL/cert1.pem --key=../SSL/privkey1.pem -n default
 
 sudo kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v3.3/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml
 sudo kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v3.3/docs/content/reference/dynamic-configuration/kubernetes-crd-rbac.yml

@@ -18,12 +18,18 @@ spec:
         - name: traefik
           image: traefik:v3.3
           args:
-            - "--api.insecure=true"
+            - "--accesslog"
+            - "--api.insecure=false"
             - "--providers.kubernetescrd"
             - "--providers.kubernetesingress"
             - "--entrypoints.web.address=:80" 
             - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
             - "--entrypoints.websecure.address=:443"
+            - "--certificatesresolvers.certificate.acme.tlschallenge"
+            - "--certificatesresolvers.certificate.acme.email=PLACEHOLDER_LE-EMAIL"
+            - "--certificatesresolvers.certificate.acme.storage=acme.json"
+            # Only needed to test the configuration, comment out the line to receive a real certificate.
+            #- "--certificatesresolvers.certificate.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
           ports:
             - name: web
               containerPort: 80

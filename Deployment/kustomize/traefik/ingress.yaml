@@ -6,6 +6,7 @@ metadata:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: certificate
 
 spec:
   rules:
@@ -33,4 +34,6 @@ spec:
   # Doesn't enable TLS for that ingress (hence for the underlying router).
   # Please see the TLS annotations on ingress made for that purpose.
   tls:
-  - secretName: onms-forrest-one-cert
+   - hosts:
+        - PLACEHOLDER_FQDN_ONMS
+        - PLACEHOLDER_FQDN_GRAFANA

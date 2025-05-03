@@ -8,6 +8,16 @@ variable "FQDN_ONMS" {
   }
 
 }
+variable "letsencrypt_email" {
+  type = string
+  description = "The email that you will use for LetsEncrypt"
+
+  validation {
+    condition = can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", var.letsencrypt_email))
+    error_message = "That doesn't appear to be a valid email. E.g. 'webmaster@example.com'"
+  }
+
+}
 variable "FQDN_GRAFANA" {
   type = string
   description = "FQDN for the Grafana Deployment"
@@ -233,6 +243,7 @@ resource "aws_instance" "OpenNMS" {
     postgres_password = random_password.postgres_password.result
     fqdn_onms         = var.FQDN_ONMS
     fqdn_grafana      = var.FQDN_GRAFANA
+    letsencrypt_email = var.letsencrypt_email
   })
 
   root_block_device {

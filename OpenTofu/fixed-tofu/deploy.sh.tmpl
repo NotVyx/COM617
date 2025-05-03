@@ -1,23 +1,27 @@
 #!/bin/bash
 set -euxo pipefail
 
+sudo mkdir /onms
+cd /onms
 sudo apt update -y && sudo apt upgrade -y
 sudo apt install -y curl git
 curl -sfL https://get.k3s.io | sh -
 echo "K3s Deployed"
 
-cd /home/ubuntu
+
 git clone https://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@github.com/NotVyx/COM617.git
 cd ./COM617/Deployment/kustomize
 sudo kubectl create secret tls onms-forrest-one-cert --cert=../SSL/cert1.pem --key=../SSL/privkey1.pem -n default
+
+sudo kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v3.3/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml
+sudo kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v3.3/docs/content/reference/dynamic-configuration/kubernetes-crd-rbac.yml
 
 sudo sed -i "s|PLACEHOLDER_POSTGREHOST|${postgres_host}|" ./opennms/hzn-core.configmap.yaml
 sudo sed -i "s|PLACEHOLDER_ONMSPASSWORD|${onms_password}|" ./opennms/hzn-core.configmap.yaml
 sudo sed -i "s|PLACEHOLDER_POSTGREPASSWORD|${postgres_password}|" ./opennms/hzn-core.configmap.yaml
 sudo sed -i "s|PLACEHOLDER_FQDN_ONMS|${fqdn_onms}|" ./traefik/ingress.yaml
 sudo sed -i "s|PLACEHOLDER_FQDN_GRAFANA|${fqdn_grafana}|" ./traefik/ingress.yaml
+sudo sed -i "s|PLACEHOLDER_LE-EMAIL|${letsencrypt_email}|" ./traefik/deployment.yaml
 
-sudo kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v3.3/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml
-sudo kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v3.3/docs/content/reference/dynamic-configuration/kubernetes-crd-rbac.yml
 
 sudo kubectl apply -k .

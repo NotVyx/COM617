@@ -55,7 +55,7 @@ resource "aws_key_pair" "generated_onms_key" {
 resource "random_password" "postgres_password" {
   length             = 20
   special            = true
-  override_special   = "!#$^&*~"  # Only valid special characters for RDS
+  override_special   = "!#$^*~"  # Only valid special characters for RDS
   upper              = true
   lower              = true
 }
@@ -64,7 +64,7 @@ resource "random_password" "postgres_password" {
 resource "random_password" "ONMS_password" {
   length             = 20
   special            = true
-  override_special   = "!#$^&*~"  # Only valid special characters for RDS
+  override_special   = "!#$^*~"  # Only valid special characters for RDS
   upper              = true
   lower              = true
 }

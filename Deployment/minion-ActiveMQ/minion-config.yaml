@@ -1,0 +1,18 @@
+http-url: "https://yourdomainhere.com/opennms" #Update to your own opennms host, preferably with the FQDN.
+broker-url: "failover:tcp://yourdomainhere.com:61616" #Update to your own opennms host, preferably with the FQDN.
+id: "minion-01" # update to a unique id, thgis will be the node name in OpenNMS
+location: "minion-location" # Update to the relevant location, this will be used to identify the location of this minion.
+
+karaf:
+  shell:
+    ssh:
+      host: "0.0.0.0"
+
+netmgt:
+  syslog: # These are the details that will be used for hosts on this minions network to send syslog outputs too, which then can be parsed by OpenNMS.
+    syslog.listen.interface: "0.0.0.0"
+    syslog.listen.port: 1514 
+
+  traps:
+    trapd.listen.interface: "0.0.0.0"
+    trapd.listen.port: 1162

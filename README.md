@@ -3,7 +3,7 @@
 This repo is part of Solent module COM617 and is split into two key sections
 ```
 COM617
-├───COM617-Config - https://github.com/NotVyx/COM617-Config
+├───COM617-Config
 ├───Deployment
 │   ├───helmchart
 │   │   └───templates
@@ -11,6 +11,7 @@ COM617
 │   │   ├───grafana
 │   │   ├───opennms
 │   │   └───traefik
+│   ├───minion-ActiveMQ
 │   └───minion-grpc
 │       └───container-fs
 │           └───minion

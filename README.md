@@ -110,7 +110,15 @@ Tofu will prompt you to confirm the actions, if you are happy to continue, type 
 
 ### Configuring OpenNMS
 If you wish to make changes to the OpenNMS config, you can utilise the base of our config repo: https://github.com/NotVyx/COM617-Config
-this is automatically pulled by our kubernetes configuration and injects it into the OpenNMS pod. If you create your own config, you will need to update the entry in: `./Deployment/kustomize/opennms/hzn-core.configmap.yaml`
+
+This repository is automatically pulled by the OpenNMS Pod and is injected into OpenNMS. If you wish to adjust this you will need to create your own repo with your own config and update:
+`./Deployment/kustomize/opennms/hzn-core.configmap.yaml`
+and these entries:
+```
+GIT_REPO: "NotVyx/COM617-Config"
+GIT_HOST: "github.com"
+GIT_BRANCH: "main"
+```
 
 
 ## Known Issues

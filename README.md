@@ -1,7 +1,23 @@
 # Network Management as a Service (NMaaS)
 
 This repo is part of Solent module COM617 and is split into two key sections
-
+```
+COM617
+├───COM617-Config - https://github.com/NotVyx/COM617-Config
+├───Deployment
+│   ├───helmchart
+│   │   └───templates
+│   ├───kustomize
+│   │   ├───grafana
+│   │   ├───opennms
+│   │   └───traefik
+│   └───minion-grpc
+│       └───container-fs
+│           └───minion
+│               └───opt
+│                   └───minion
+└───OpenTofu
+```
 `Deployment` Contains everything to do with Kubernetes / OpenNMS deployment files.<br />
 `OpenTofu` Contains all the files for the infrastructure as code deployment within AWS.
 

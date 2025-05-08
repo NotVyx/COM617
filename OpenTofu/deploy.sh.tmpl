@@ -5,7 +5,7 @@ sudo apt install -y curl git
 
 mkdir /onms
 cd /onms
-git clone https://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@github.com/NotVyx/COM617.git
+git clone https://github.com/NotVyx/COM617.git
 cd ./COM617/Deployment/kustomize
 sudo sed -i "s|PLACEHOLDER_POSTGREHOST|${postgres_host}|" ./opennms/hzn-core.configmap.yaml
 sudo sed -i "s|PLACEHOLDER_ONMSPASSWORD|${onms_password}|" ./opennms/hzn-core.configmap.yaml

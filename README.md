@@ -16,14 +16,12 @@ You will need to install the below tools on your system of choice. <br />
 `AWS CLI` https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html <br />
 
 
-## Clone the Repo
+## Deployment
 Clone our current repo.
 ```
 $ git clone https://github.com/NotVyx/COM617.git
 ```
-
-## Deploy
-Move to the OpenTofu folder:
+Navigate to the OpenTofu folder:
 ```
 $ cd ./COM617/OpenTofu
 ```

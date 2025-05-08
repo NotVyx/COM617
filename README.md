@@ -22,17 +22,16 @@ COM617
 `Deployment` Contains everything to do with Kubernetes / OpenNMS deployment files.<br />
 `OpenTofu` Contains all the files for the infrastructure as code deployment within AWS.
 
-# Getting Started
-Follow this process to fully deploy our current solution.
+## Core Deployment
+If you wish to deploy our current Core OpenNMS deployment in AWS, follow this process
 
-## Requirements
+### Requirements
 You will need to install the below tools on your system of choice. <br />
 `git` https://git-scm.com/ <br />
 `OpenTofu` https://opentofu.org/docs/intro/install/ <br />
 `AWS CLI` https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html <br />
 `FQDN` https://www.techtarget.com/whatis/definition/fully-qualified-domain-name-FQDN
 
-## Core Deployment
 Clone our current repo.
 ```
 $ git clone https://github.com/NotVyx/COM617.git

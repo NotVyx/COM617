@@ -130,8 +130,25 @@ You will need to installed on the OS of the minion. <br />
 Though you can simply copy the contents of both files in `./Deployment/minion-ActiveMQ` onto your host of choice, cloning the repo is easier.<br />
 ```
 $ git clone https://github.com/NotVyx/COM617.git
+$ cd ./COM617/Deployment/minion-ActiveMQ
 ```
 
 ### Update Configuration
 You will need to update the configuration in both `docker-compose.yaml` and `minion-config.yaml`.<br />
 Each of these files have comments so please refer to them for guidance. However ensure you update the `http-url` and `broker-url` entries in the minion-config, otherwise the minion will **FAIL** to start.
+
+### Deploy the Minion
+Once you have verified your own configuration and the Core OpenNMS deployment is accessible, you can attempt to run the minion.
+```
+$ sudo docker compose up -d
+[+] Running 30/30
+ ✔ minion Pulled
+[+] Running 2/2
+ ✔ Network onmsminion_default  Created
+ ✔ Container minion            Started
+
+```
+The system can take a few moments to initialise, it will show up on OpenNMS when ready, if you don't see it, you can view the docker logs by running:
+```
+$ sudo docker compose logs
+```

@@ -10,9 +10,9 @@ This repo is part of Solent module COM617 and is split into two key sections
 Follow this process to fully deploy our current solution.
 
 ### Requirements
-`git` https://git-scm.com/
-`OpenTofu` https://opentofu.org/docs/intro/install/
-`AWS CLI` https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+`git` https://git-scm.com/ <br />
+`OpenTofu` https://opentofu.org/docs/intro/install/ <br />
+`AWS CLI` https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html <br />
 
 
 ### Clone the Repo

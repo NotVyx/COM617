@@ -116,7 +116,7 @@ Tofu will prompt you to confirm the actions, if you are happy to continue, type 
 Currently, there is some known issues as follows:
 - The Helmchart does not fully function, the communication between Traefik and OpenNMS does not work.
 
-
+<br /><br /><br />
 
 ## ActiveMQ Minion Deployment
 On a system of your choice, you will be able to deploy a minion and attach it to the OpenNMS.

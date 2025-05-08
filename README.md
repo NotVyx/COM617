@@ -134,4 +134,4 @@ $ git clone https://github.com/NotVyx/COM617.git
 
 ### Update Configuration
 You will need to update the configuration in both `docker-compose.yaml` and `minion-config.yaml`.<br />
-Each of these files have comments so please refer to them for guidance. However ensure you update the `http-url` and `broker-url` entries in the minion-config, otherwise the minion will ***fail*** to start.
+Each of these files have comments so please refer to them for guidance. However ensure you update the `http-url` and `broker-url` entries in the minion-config, otherwise the minion will **FAIL** to start.

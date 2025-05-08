@@ -112,8 +112,8 @@ Tofu will prompt you to confirm the actions, if you are happy to continue, type 
 If you wish to make changes to the OpenNMS config, you can utilise the base of our config repo: https://github.com/NotVyx/COM617-Config
 
 This repository is automatically pulled by the OpenNMS Pod and is injected into OpenNMS. If you wish to adjust this you will need to create your own repo with your own config and update: <br />
-`./Deployment/kustomize/opennms/hzn-core.configmap.yaml`
-and these entries:
+`./Deployment/kustomize/opennms/hzn-core.configmap.yaml`<br />
+and these entries to your own repo:
 ```
 GIT_REPO: "NotVyx/COM617-Config"
 GIT_HOST: "github.com"

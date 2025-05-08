@@ -146,7 +146,6 @@ $ sudo docker compose up -d
 [+] Running 2/2
  ✔ Network onmsminion_default  Created
  ✔ Container minion            Started
-
 ```
 The system can take a few moments to initialise, it will show up on OpenNMS when ready, if you don't see it, you can view the docker logs by running:
 ```

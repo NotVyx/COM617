@@ -30,8 +30,9 @@ You will need to install the below tools on your system of choice. <br />
 `git` https://git-scm.com/ <br />
 `OpenTofu` https://opentofu.org/docs/intro/install/ <br />
 `AWS CLI` https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html <br />
+`FQDN` https://www.techtarget.com/whatis/definition/fully-qualified-domain-name-FQDN
 
-## Deployment
+## Core Deployment
 Clone our current repo.
 ```
 $ git clone https://github.com/NotVyx/COM617.git
@@ -117,3 +118,20 @@ Currently, there is some known issues as follows:
 
 
 
+## ActiveMQ Minion Deployment
+On a system of your choice, you will be able to deploy a minion and attach it to the OpenNMS.
+
+### Requirements
+You will need to installed on the OS of the minion. <br />
+`git` https://git-scm.com/ <br />
+`docker` https://docs.docker.com/engine/install/ <br />
+
+### Clone the Repo
+Though you can simply copy the contents of both files in `./Deployment/minion-ActiveMQ` onto your host of choice, cloning the repo is easier.<br />
+```
+$ git clone https://github.com/NotVyx/COM617.git
+```
+
+### Update Configuration
+You will need to update the configuration in both `docker-compose.yaml` and `minion-config.yaml`.<br />
+Each of these files have comments so please refer to them for guidance. However ensure you update the `http-url` and `broker-url` entries in the minion-config, otherwise the minion will ***fail*** to start.

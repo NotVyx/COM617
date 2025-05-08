@@ -2,8 +2,7 @@
 
 This repo is part of Solent module COM617 and is split into two key sections
 
-`Deployment` Contains everything to do with Kubernetes / OpenNMS deployment files.
-
+`Deployment` Contains everything to do with Kubernetes / OpenNMS deployment files.<br />
 `OpenTofu` Contains all the files for the infrastructure as code deployment within AWS.
 
 # Getting Started
@@ -14,7 +13,6 @@ You will need to install the below tools on your system of choice. <br />
 `git` https://git-scm.com/ <br />
 `OpenTofu` https://opentofu.org/docs/intro/install/ <br />
 `AWS CLI` https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html <br />
-
 
 ## Deployment
 Clone our current repo.

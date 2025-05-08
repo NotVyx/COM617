@@ -12,7 +12,7 @@ COM617
 │   │   ├───opennms
 │   │   └───traefik
 │   ├───minion-ActiveMQ
-│   └───minion-grpc
+│   └───minion-grpc-broken
 │       └───container-fs
 │           └───minion
 │               └───opt

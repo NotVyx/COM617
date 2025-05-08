@@ -121,7 +121,7 @@ Currently, there is some known issues as follows:
 On a system of your choice, you will be able to deploy a minion and attach it to the OpenNMS.
 
 ### Requirements
-You will need to installed on the OS of the minion. <br />
+You will need to install these requirements on the minion. <br />
 `git` https://git-scm.com/ <br />
 `docker` https://docs.docker.com/engine/install/ <br />
 

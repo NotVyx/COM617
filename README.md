@@ -108,7 +108,9 @@ OpenTofu will perform the following actions: ...
 ```
 Tofu will prompt you to confirm the actions, if you are happy to continue, type 'yes'.
 
-
+### Configuring OpenNMS
+If you wish to make changes to the OpenNMS config, you can utilise the base of our config repo: https://github.com/NotVyx/COM617-Config
+this is automatically pulled by our kubernetes configuration and injects it into the OpenNMS pod. If you create your own config, you will need to update the entry in: `./Deployment/kustomize/opennms/hzn-core.configmap.yaml`
 
 
 ## Known Issues
